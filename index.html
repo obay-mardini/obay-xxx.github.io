@@ -4,12 +4,14 @@
 	<head>
 		<style>
 		  #body {
-			  min-width: 960px;
+			  min-width: 960px
 			}
 			#mapSpace {
-			border : 2px solid red;
-			width : 100%;
-			height : 420px; 
+			border : 5px solid green;
+			width : 100vw;
+			height : 50vh;
+			margin-left : 0px;
+			margin-right : 0px;
 		}
 		
 		</style>
@@ -64,15 +66,16 @@
 				google.maps.event.addListener(marker, "click", function() {
 			
 			//setting init variable to -152 to fit the photos on the screen
-				init = -152;
+			  debugger;
+				init = -13;
 				
 			//Adding two buttons at the left and the right of the photo's album
 				var rightButton = document.createElement("button");
 				var leftButton = document.createElement("button");
-				rightButton.style.width = "88px";
-				rightButton.style.height = "200px";
+				rightButton.style.width = "5vw";
+				rightButton.style.height = "18vw";
 				rightButton.style.position = "absolute";
-				rightButton.style.left = "1250px";
+				rightButton.style.left = "95vw";
 				document.body.appendChild(rightButton);
 				
 				/*//adding an infoWindow when clicking on a marker and showing the local time in it.
@@ -109,8 +112,8 @@
 				maxI += 5;
 				leftButton.innerText = "back";
 				leftButton.id = "leftButton"
-				leftButton.style.width = "88px";
-				leftButton.style.height = "200px";
+				leftButton.style.width = "5vw";
+				leftButton.style.height = "18vw";
 				leftButton.style.position = "absolute";
 				document.body.appendChild(leftButton);
 				leftButton.onclick = function() {
@@ -156,19 +159,20 @@
 		if(x[i].url_l) {
 			photoFrame.className = "class";
 		document.body.appendChild(photoFrame);
-		init += 240;
+
+		init += 18;
 		
 		//setting the frames properties
 		photoFrame.style.border = "2px solid yellow"
 		photoFrame.style.position = "absolute";
-		photoFrame.style.width = "200px";
-		photoFrame.style.height = "200px";
+		photoFrame.style.width = "18vw";
+		photoFrame.style.height = "18vw";
 		
 		//set the photos next to each other
-		photoFrame.style.left = "" + init + "px";
+		photoFrame.style.left = "" + init + "vw";
 		
 		//infuse the photos inside the frames
-			photoFrame.innerHTML = "<img src = " + '"' + x[i].url_l + '"' + "height = '200px' width = '200px'/>";
+			photoFrame.innerHTML = "<img src = " + '"' + x[i].url_l + '"' + "height = '100%' width = '100%'/>";
 		} else {
 			console.log("errrro");
 			i += 1;
@@ -178,7 +182,7 @@
 		
 		//show a set of five photos in each call
 		function show(i, maxI, photoObject) {
-			init = -152;
+			init = -13;
 		console.log("i = " + i + "maxI = "+ maxI);
 			var frames = document.getElementsByClassName("class");
 
