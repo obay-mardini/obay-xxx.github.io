@@ -21,27 +21,32 @@
 	</head>
 	<body>
 
-	<div id = "mapSpace"></div>
+	  <div id = "mapSpace"></div>
 
 	<script>
-		var infowindow = new google.maps.InfoWindow();
+	
+		var infoWindow = new google.maps.InfoWindow();
 		
-		//Call the main function "initialize"
+		//Call the main function "initialize" when loading the page
 		google.maps.event.addDomListener(window, "load", initialize);
 		
 		//The main function
 		function initialize() {
 			var center = new google.maps.LatLng(50, 50);
 			var mapObject = {
-			center : center,
-			zoom : 3,
-			mapTypeId: google.maps.MapTypeId.ROADMAP
-		}
+			  center : center,
+			  zoom : 3,
+			  mapTypeId: google.maps.MapTypeId.ROADMAP
+			}
 			
 		//drawing the map on the "mapSpace"	HTML element
 			var map = new google.maps.Map(document.getElementById("mapSpace"), mapObject);
 		
-		//calling getLatLng function to get the coordinates of every country of the world and then draw a marker for each of them
+		/**
+		 *getLatLng function will make a XHR request to a gighub repo
+		 *to get the coordinates of every country 
+		 *in the world and then draw a marker for each of them
+		 */
 		getLatLng(map);
 		}
 	 
@@ -49,51 +54,54 @@
 			
 			var latLngReg = new XMLHttpRequest();
 		
-		//processing the response and drawing a marker for each country
-		latLngReg.onload = function() {
-			JSON.parse(this.responseText).forEach(function(item) {
-			
-				//drawing markers based on the coordinates get from the JSON object.
-				var marker = new google.maps.Marker({
-						position : new google.maps.LatLng(item["latlng"][0], item["latlng"][1])
-				});
-				marker.setMap(map);
-			
-			/**
-			* when clicking on a marker the programs will call makePhotosRequest function with a country name parameter
-			* to get all the photos in flicker Api taking at this country.
-			*/
-				google.maps.event.addListener(marker, "click", function() {
-			
-			//setting init variable to -152 to fit the photos on the screen
-			  map.setZoom(6);
-				map.setCenter(marker.position)
-				init = -13;
+			//process the response and drawe a marker for each country using forEach method
+			latLngReg.onload = function() {
+				JSON.parse(this.responseText).forEach(function(item) {
 				
-			//Adding two buttons at the left and the right of the photo's album
-				var rightButton = document.createElement("button");
-				var leftButton = document.createElement("button");
-				rightButton.style.width = "5vw";
-				rightButton.style.height = "18vw";
-				rightButton.style.position = "absolute";
-				rightButton.style.left = "95vw";
-				document.body.appendChild(rightButton);
+					//drawing markers based on the coordinates get from the JSON object.
+					var marker = new google.maps.Marker({
+							position : new google.maps.LatLng(item["latlng"][0], item["latlng"][1])
+					});
+					marker.setMap(map);
 				
-				/*//adding an infoWindow when clicking on a marker and showing the local time in it.
-				timeBox.setContent(item['name']['official']);
-				timeBox.open(map, marker);
+				/**
+				*when clicking on a marker the programs will call makePhotosRequest function with a country name parameter
+				*to get all the photos in flicker Api taking at this country.
 				*/
+					google.maps.event.addListener(marker, "click", function() {
 				
-				//making weather request to show the weather information in an info window above the clicked marker
-				makeWeatherRequest(this.position, map, marker);
-				makePhotosRequest(item["name"]["official"], rightButton, leftButton);
-			})
-			});
+				/**
+				 *set init variable to -13 to fit the photo's frames on the screen 
+				 *and set the zoom to 6 when clicking on a marker
+				 */
+					map.setZoom(6);
+					map.setCenter(marker.position)
+					init = -13;
+					
+				//Adding two buttons at the left and the right of the photo's frames
+					var rightButton = document.createElement("button");
+					var leftButton = document.createElement("button");
+					rightButton.style.width = "5vw";
+					rightButton.style.height = "18vw";
+					rightButton.style.position = "absolute";
+					rightButton.style.left = "95vw";
+					document.body.appendChild(rightButton);
+					
+					/**
+					 *making XHR request to weather map api to show the weather information
+					 *in an info window above the clicked marker
+					 */
+					makeWeatherRequest(this.position, map, marker);
+					makePhotosRequest(item["name"]["official"], rightButton, leftButton);
+					
+					// the end of the marker's event handler
+				})
+				});
 			}
 		
-		//calling a github repo with coordinates of the world countries
-		latLngReg.open("get", "https://raw.githubusercontent.com/mledoze/countries/master/countries.json", true);
-		latLngReg.send();
+			//calling a github repo with the coordinates of the countries
+			latLngReg.open("get", "https://raw.githubusercontent.com/mledoze/countries/master/countries.json", true);
+			latLngReg.send();
 		}
 		
 		//calling flickr api and get the photos 
@@ -104,8 +112,8 @@
 		//process JSON data object response and console log the urls the photos of the requested country
 			photoRequest.onload = function() {
 			var max = JSON.parse(this.responseText).photos.photo.length;
-			var i = 30;
-			var maxI = 35;
+			var i = -5;
+			var maxI = 0;
 			rightButton.onclick = function() {
 			rightButton.innerText = "forward";
 				if (i + 5 >= 0 && ((maxI + 5) / 5) <= parseInt(max / 5) ) {
@@ -128,12 +136,10 @@
 				if (i < 0) {
 					document.body.removeChild(document.getElementById("leftButton"));
 					i += 5;
-						maxI += 5;
-					console.log("i is less than zero")    
+						maxI += 5;  
 				}
 				
 				if (i >= 5){
-					console.log("i is greater than five")
 						show(i, maxI, photoRequest);
 				}
 				
@@ -175,7 +181,7 @@
 		//infuse the photos inside the frames
 			photoFrame.innerHTML = "<img src = " + '"' + x[i].url_l + '"' + "height = '100%' width = '100%'/>";
 		} else {
-			console.log("errrro");
+			console.log("erorr");
 			i += 1;
 			maxI += 1;
 		} 
@@ -184,7 +190,6 @@
 		//show a set of five photos in each call
 		function show(i, maxI, photoObject) {
 			init = -13;
-		console.log("i = " + i + "maxI = "+ maxI);
 			var frames = document.getElementsByClassName("class");
 
 				while(frames[0]) {
@@ -192,12 +197,11 @@
 				}
 		
 				for(i ; i < maxI ; i++){
-				console.log("i = FOR LOOP " + i + "maxI = "+ maxI);
 				setThePhotos(JSON.parse(photoObject.response).photos.photo, i, maxI);
 			}
 		}
 		
-		//providing weather information in infowindows using open weather map api
+		//providing weather information in infoWindows using open weather map api
 		function makeWeatherRequest(coordinates, map, marker) {
 			var lat = coordinates.lat();
 			var lon = coordinates.lng();
@@ -207,15 +211,11 @@
 			weatherRequest.onload = function() {
 			
 			//setting the content in the info window
-				infowindow.setContent("<p>" + "Weather description is " + JSON.parse(this.responseText).weather[0].description + "</br></br>" + "The tempreature = " + (JSON.parse(this.responseText).main.temp-273.15).toFixed(2) + " Celsius" + "</p>");
-			infowindow.open(map,marker);
+				infoWindow.setContent("<p>" + "Weather description is " + JSON.parse(this.responseText).weather[0].description + "</br></br>" + "The tempreature = " + (JSON.parse(this.responseText).main.temp-273.15).toFixed(2) + " Celsius" + "</p>");
+			infoWindow.open(map,marker);
 			}
 		}
-		/*
-		function newFun(x, i, maxI, photoFrame) {
-			
-		}
-	*/	
+		
 		</script>
 	</body>
 </html>
