@@ -27,7 +27,7 @@
 		
 			var infoWindow = new google.maps.InfoWindow();
 			
-			// initialSpaceValueiate initialSpaceValue variable to set the distance between the photos
+			// initiate  initialSpaceValue variable to set the distance between the photos
 			var initialSpaceValue;
 			
 			//Call the main function 'initialize' when loading the page
@@ -57,7 +57,7 @@
 				
 				var latidudeLongitudeRequest = new XMLHttpRequest();
 			
-				//process the response and drawe a marker for each country using forEach method
+				//process the response and draw a marker for each country using forEach method
 				latidudeLongitudeRequest.onload = function() {
 					JSON.parse(this.responseText).forEach(function(item) {
 					
@@ -167,7 +167,7 @@
 				
 				var photoFrame = document.createElement('photo');
 				
-				// check wehther the photo url is defined or not and console.log an error if it is undefined
+				// check whether the photo url is defined or not and console.log an error if it is undefined
 				if (x[iteration].url_l) {
 					photoFrame.className = 'class';
 					document.body.appendChild(photoFrame);
@@ -198,7 +198,7 @@
 			  var frames = document.getElementsByClassName('class');
 				initialSpaceValue = -13;
 				
-		    // delete photo's frame 		
+		    // delete photos' frames 		
 				while (frames[0]) {
 					document.body.removeChild(frames[0]);
 				}
