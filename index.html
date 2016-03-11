@@ -10,13 +10,12 @@
 		</style>
 	</head>
 	<body>
-		<input type = "text" list = "countryList" onchange = console.log(this.value)>
+		<input type = "text" list = "countryLis" style = "position : absolute ; width : 5vw; height : 2vw ; left : 30vw;" onchange = "getGithubCountryRepo(this.value)">
 	  <script>
 			var countryInputBox = document.getElementById("inputBox");
-			var countryList = document.createElement("datalist");
-			document.body.appendChild(countryList);
-			countryList.id = "countryList";
-			var country = "Austria";
+			var countryLis = document.createElement("datalist");
+			document.body.appendChild(countryLis);
+			countryLis.id = "countryLis";
 			var buttonPanel = document.createElement("div");
 			var rightButton = document.createElement("button");
 			var leftButton = document.createElement("button");
@@ -39,28 +38,6 @@
 			rightButton.style.width = "2.5vw";
 			rightButton.style.height = "1.5vw";
 			buttonPanel.appendChild(leftButton);
-			rightButton.onclick = function() {
-				if (i === 0) {
-					buttonPanel.appendChild(leftButton);
-					leftButton.innerText = "back";
-					leftButton.style.position = "absolute"
-	  			leftButton.style.left = "2.5vw";
-					leftButton.style.width = "2.5vw";
-					leftButton.style.height = "1.5vw";
-					leftButton.onclick = function() {
-						if (i > 0){
-							i -= 5;
-							max -= 5;
-							getFlickrPhotos(country, i, max);
-						}	
-					}
-				}
-				if (max <= 30){
-					i += 5;
-					max += 5;
-					getFlickrPhotos(country, i, max);
-				}
-			}
 			
 			
 			function getWeather(latitudeLongitude, weather) {
@@ -102,33 +79,33 @@
 					}
 				}
 			
-			var countryList = document.createElement("div");
+			var countryInfo = document.createElement("div");
 			function getGithubCountryRepo(country) {
 			  var countryRequest = new XMLHttpRequest();
-				
 				var countryArea = document.createElement("p");
 				var countryRegion = document.createElement("p");
 				var countryCapital = document.createElement("p");
 				var countryCurrency = document.createElement("p");
 				var countryCoordinates = document.createElement("p");
 				var weather = document.createElement("p");
+				
 				countryRequest.open("get", 'https://raw.githubusercontent.com/mledoze/countries/master/countries.json', true);
 				countryRequest.send();
 				countryRequest.onload = function() {
-					countryList.style.position = "absolute";
-					countryList.style.left = "50vw";
-					countryList.style.top = "0px"
-					countryList.style.width = "25vw";
-					countryList.style.height = "25vw"
-					countryList.style.border = "solid 2px blue"
+					countryInfo.style.position = "absolute";
+					countryInfo.style.left = "50vw";
+					countryInfo.style.top = "0px"
+					countryInfo.style.width = "25vw";
+					countryInfo.style.height = "25vw"
+					countryInfo.style.border = "solid 2px blue"
 					countryCurrency.style.position = "absolute"
-					countryList.appendChild(countryCurrency);
-					document.body.appendChild(countryList);
-					countryList.appendChild(countryCoordinates);
-					countryList.appendChild(countryArea);
-					countryList.appendChild(countryRegion);
-					countryList.appendChild(countryCapital);
-					countryList.appendChild(weather);
+					countryInfo.appendChild(countryCurrency);
+					document.body.appendChild(countryInfo);
+					countryInfo.appendChild(countryCoordinates);
+					countryInfo.appendChild(countryArea);
+					countryInfo.appendChild(countryRegion);
+					countryInfo.appendChild(countryCapital);
+					countryInfo.appendChild(weather);
 					countryCoordinates.style.position = "absolute";
 					countryCoordinates.style.top = "2vw"
 					countryArea.style.position = "absolute";
@@ -139,21 +116,45 @@
 					countryCapital.style.top = "8.5vw";
 					weather.style.position = "absolute";
 					weather.style.top = "10vw";
-					for (var i = 0; i < JSON.parse(this.responseText).length; i++){
-						if(JSON.parse(this.responseText)[i].name.common === country){
-							var latitudeLongitude = JSON.parse(this.responseText)[i].latlng;
-							countryCurrency.innerHTML = "Currency = " + JSON.parse(this.responseText)[i].currency;
+					for (var j = 0; i < JSON.parse(this.responseText).length; j++){
+						if(JSON.parse(this.responseText)[j].name.common === country){
+						  var x = JSON.parse(this.responseText)[j].name.official;
+							var latitudeLongitude = JSON.parse(this.responseText)[j].latlng;
+							countryCurrency.innerHTML = "Currency = " + JSON.parse(this.responseText)[j].currency;
 							countryCoordinates.innerHTML = "Latitude = " + latitudeLongitude[0] + "</br>" + "Longitude = " + latitudeLongitude[1];
-							countryArea.innerHTML = "Area = " + JSON.parse(this.responseText)[i].area + "Square Kilometer";
-							countryRegion.innerHTML = "Region = " + JSON.parse(this.responseText)[i].region;
-							countryCapital.innerHTML = "Capital City = " + JSON.parse(this.responseText)[i].capital;
+							countryArea.innerHTML = "Area = " + JSON.parse(this.responseText)[j].area + "Square Kilometer";
+							countryRegion.innerHTML = "Region = " + JSON.parse(this.responseText)[j].region;
+							countryCapital.innerHTML = "Capital City = " + JSON.parse(this.responseText)[j].capital;
+							rightButton.onclick = function() {
+								console.log(x);
+								if (i === 0) {
+									buttonPanel.appendChild(leftButton);
+									leftButton.innerText = "back";
+									leftButton.style.position = "absolute"
+									leftButton.style.left = "2.5vw";
+									leftButton.style.width = "2.5vw";
+									leftButton.style.height = "1.5vw";
+									leftButton.onclick = function() {
+										if (i > 0){
+											i -= 5;
+											max -= 5;
+											getFlickrPhotos(x, i, max);
+										}	
+									}
+								}
+								if (max <= 30){
+									i += 5;
+									max += 5;
+									getFlickrPhotos(x, i, max);
+								}
+							}
+							
 							getWeather(latitudeLongitude, weather);
 							pullLatestNews(country);
 							drawGoogleMap(latitudeLongitude);
 							break;
 						}
 					}
-		
 				}
 			}
 			
@@ -177,7 +178,7 @@
 			googleStaticMap.innerHTML = "<img src = " + 'https://maps.googleapis.com/maps/api/staticmap?' + 'center=' + latitude + ',' + longitude +'&' +
 			'zoom=6&size=600x300&maptype=roadmap&markers=color:green%7Clabel:G%7C' + latitude + ',' + longitude + " " + "style = 'postion : absolute ; top : 0px;width : 25vw ; height : 25vw;'" + '/>';
 		}
-		
+		pullCountryNames();
 		function pullCountryNames() {
 			var countryNamesRequest = new XMLHttpRequest();
 			countryNamesRequest.open("get", 'https://raw.githubusercontent.com/mledoze/countries/master/countries.json', true);
@@ -185,7 +186,7 @@
 			countryNamesRequest.send();
 			countryNamesRequest.onload = function() {
 				JSON.parse(this.responseText).forEach(function (countryItem) {
-								countryList.innerHTML += "<option value = " + countryItem.name.common + ">";
+								countryLis.innerHTML += "<option value = " + countryItem.name.common + ">";
 				});
 			}
 		}
@@ -193,7 +194,7 @@
 		//pull latest news from guardian api
 		function pullLatestNews(country) {
 			newsPanel = document.createElement("div");
-			countryList.appendChild(newsPanel);
+			countryInfo.appendChild(newsPanel);
 			newsPanel.style.position = "absolute";
 			newsPanel.style.top = "50%";
 			var newsRequest = new XMLHttpRequest();
@@ -211,7 +212,7 @@
 			}
 		}
 
-	getGithubCountryRepo(country);
+	
 		</script>
 	</body>
 </html>
