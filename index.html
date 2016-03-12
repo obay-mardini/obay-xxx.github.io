@@ -10,22 +10,20 @@
 		</style>
 	</head>
 	<body>
-		<input type = "text" list = "countryLis" style = "position : absolute ; width : 5vw; height : 2vw ; left : 30vw;" onchange = "getGithubCountryRepo(this.value)">
+		<input type = "text" list = "countryList" style = "position : absolute ; width : 5vw; height : 2vw ; left : 30vw;" onchange = "getGithubCountryRepo(this.value)">
 	  <script>
 			var countryInputBox = document.getElementById("inputBox");
-			var countryLis = document.createElement("datalist");
-			document.body.appendChild(countryLis);
-			countryLis.id = "countryLis";
+			var countryList = document.createElement("datalist");
+			var countryInfo;
 			var buttonPanel = document.createElement("div");
 			var rightButton = document.createElement("button");
 			var leftButton = document.createElement("button");
-			
-			//set i and max to limit the number of flickr's photos at each request to be 5
-			var i = -5;
-			var max = 0;
-			
+									
 			//photoSet is a panel to set the photo on
 			var photoSet;
+			var googleStaticMap;
+			document.body.appendChild(countryList);
+			countryList.id = "countryList";
 			document.body.appendChild(buttonPanel);
 			buttonPanel.appendChild(rightButton);
 			buttonPanel.style.position = "absolute";
@@ -38,7 +36,6 @@
 			rightButton.style.width = "2.5vw";
 			rightButton.style.height = "1.5vw";
 			buttonPanel.appendChild(leftButton);
-			
 			
 			function getWeather(latitudeLongitude, weather) {
 				var latitude = latitudeLongitude[0];
@@ -79,8 +76,17 @@
 					}
 				}
 			
-			var countryInfo = document.createElement("div");
+			
 			function getGithubCountryRepo(country) {
+				if (!countryInfo){
+					countryInfo = document.createElement("div");
+				} else {
+					document.body.removeChild(countryInfo);
+					countryInfo = document.createElement("div");
+				}
+				//set i and max to limit the number of flickr's photos at each request to be 5
+				var i = -5;
+				var max = 0;
 			  var countryRequest = new XMLHttpRequest();
 				var countryArea = document.createElement("p");
 				var countryRegion = document.createElement("p");
@@ -88,7 +94,6 @@
 				var countryCurrency = document.createElement("p");
 				var countryCoordinates = document.createElement("p");
 				var weather = document.createElement("p");
-				
 				countryRequest.open("get", 'https://raw.githubusercontent.com/mledoze/countries/master/countries.json', true);
 				countryRequest.send();
 				countryRequest.onload = function() {
@@ -169,11 +174,16 @@
 					document.body.appendChild(mapSquare);
 				}
 			}
-			
+
 		function drawGoogleMap(latitudeLongitude) {
 			var latitude = latitudeLongitude[0];
 			var longitude = latitudeLongitude[1];
-			var googleStaticMap = document.createElement("photo");
+			if(!googleStaticMap){
+				googleStaticMap = document.createElement("photo");
+			} else {
+				document.body.removeChild(googleStaticMap);
+				googleStaticMap = document.createElement("photo");
+			}
 			document.body.appendChild(googleStaticMap);
 			googleStaticMap.innerHTML = "<img src = " + 'https://maps.googleapis.com/maps/api/staticmap?' + 'center=' + latitude + ',' + longitude +'&' +
 			'zoom=6&size=600x300&maptype=roadmap&markers=color:green%7Clabel:G%7C' + latitude + ',' + longitude + " " + "style = 'postion : absolute ; top : 0px;width : 25vw ; height : 25vw;'" + '/>';
@@ -186,7 +196,7 @@
 			countryNamesRequest.send();
 			countryNamesRequest.onload = function() {
 				JSON.parse(this.responseText).forEach(function (countryItem) {
-								countryLis.innerHTML += "<option value = " + countryItem.name.common + ">";
+								countryList.innerHTML += "<option value = " + countryItem.name.common + ">";
 				});
 			}
 		}
