@@ -56,7 +56,7 @@
 					photoSet = document.createElement("div");
 					document.body.appendChild(photoSet);
 				} else {
-					document.body.removeChild(photoSet)
+					document.body.removeChild(photoSet);
 					photoSet = document.createElement("div");
 					document.body.appendChild(photoSet);
 				}
@@ -78,12 +78,19 @@
 			
 			
 			function getGithubCountryRepo(country) {
+				if (photoSet) {
+					document.body.removeChild(photoSet);
+					photoSet = document.createElement("div");
+					document.body.appendChild(photoSet);
+				}
+			
 				if (!countryInfo){
 					countryInfo = document.createElement("div");
 				} else {
 					document.body.removeChild(countryInfo);
 					countryInfo = document.createElement("div");
 				}
+				
 				//set i and max to limit the number of flickr's photos at each request to be 5
 				var i = -5;
 				var max = 0;
@@ -131,7 +138,6 @@
 							countryRegion.innerHTML = "Region = " + JSON.parse(this.responseText)[j].region;
 							countryCapital.innerHTML = "Capital City = " + JSON.parse(this.responseText)[j].capital;
 							rightButton.onclick = function() {
-								console.log(x);
 								if (i === 0) {
 									buttonPanel.appendChild(leftButton);
 									leftButton.innerText = "back";
@@ -188,7 +194,9 @@
 			googleStaticMap.innerHTML = "<img src = " + 'https://maps.googleapis.com/maps/api/staticmap?' + 'center=' + latitude + ',' + longitude +'&' +
 			'zoom=6&size=600x300&maptype=roadmap&markers=color:green%7Clabel:G%7C' + latitude + ',' + longitude + " " + "style = 'postion : absolute ; top : 0px;width : 25vw ; height : 25vw;'" + '/>';
 		}
+		
 		pullCountryNames();
+		
 		function pullCountryNames() {
 			var countryNamesRequest = new XMLHttpRequest();
 			countryNamesRequest.open("get", 'https://raw.githubusercontent.com/mledoze/countries/master/countries.json', true);
@@ -196,7 +204,10 @@
 			countryNamesRequest.send();
 			countryNamesRequest.onload = function() {
 				JSON.parse(this.responseText).forEach(function (countryItem) {
-								countryList.innerHTML += "<option value = " + countryItem.name.common + ">";
+					var option = document.createElement("option");
+					countryList.appendChild(option);
+					option.value = countryItem.name.common;
+
 				});
 			}
 		}
