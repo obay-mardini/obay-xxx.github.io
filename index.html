@@ -18,7 +18,36 @@
 			var buttonPanel = document.createElement("div");
 			var rightButton = document.createElement("button");
 			var leftButton = document.createElement("button");
-									
+				var newsTable = document.createElement("table");
+			var caption = document.createElement("caption");
+			var colgroup  = document.createElement("colgroup");
+			var col1  = document.createElement("col");
+			var thead = document.createElement("thead");
+			var tfoot = document.createElement("tfoot");
+			var tbody = document.createElement("tbody");
+			var row  = document.createElement("tr");
+			var row4  = document.createElement("tr");
+			var row2  = document.createElement("tr");
+			var td = document.createElement("td");
+			var col2  = document.createElement("col");
+	
+			var row3  = document.createElement("tr");
+		
+			var th = document.createElement("th");
+			th.innerHTML = "NEWS";
+
+			
+			document.body.appendChild(newsTable);
+			newsTable.appendChild(caption);
+			newsTable.appendChild(colgroup);
+			colgroup.appendChild(col1);
+			colgroup.appendChild(col2);
+			newsTable.appendChild(thead);
+			newsTable.appendChild(tfoot);
+			newsTable.appendChild(tbody);
+			thead.appendChild(row);
+			row.appendChild(th);
+			tbody.appendChild(row);						
 			//photoSet is a panel to set the photo on
 			var photoSet;
 			var googleStaticMap;
@@ -36,6 +65,10 @@
 			rightButton.style.width = "2.5vw";
 			rightButton.style.height = "1.5vw";
 			buttonPanel.appendChild(leftButton);
+			newsTable.style.position = "absolute";
+			newsTable.style.left = "80vw";
+			newsTable.style.width = "20vw";
+			newsTable.style.height = "50vh";	
 			
 			function getWeather(latitudeLongitude, weather) {
 				var latitude = latitudeLongitude[0];
@@ -45,7 +78,7 @@
 				'&lon=' + longitude + '&appid=bd5bc1519755874543545ebe815796ba', true);
 				makeWeatherRequest.send();
 				makeWeatherRequest.onload = function() {
-				weather.innerHTML = JSON.parse(this.responseText).weather[0].description + "</br>" + (JSON.parse(this.responseText).main.temp - 273.15, 2).toFixed() + "  Celsius" ;
+					weather.innerHTML = JSON.parse(this.responseText).weather[0].description + "</br>" + (JSON.parse(this.responseText).main.temp - 273.15, 2).toFixed() + "  Celsius" ;
 				}
 			
 			}
@@ -78,6 +111,7 @@
 			
 			
 			function getGithubCountryRepo(country) {
+				
 				if (photoSet) {
 					document.body.removeChild(photoSet);
 					photoSet = document.createElement("div");
@@ -214,23 +248,22 @@
 		
 		//pull latest news from guardian api
 		function pullLatestNews(country) {
-			newsPanel = document.createElement("div");
-			countryInfo.appendChild(newsPanel);
-			newsPanel.style.position = "absolute";
-			newsPanel.style.top = "50%";
+			
 			var newsRequest = new XMLHttpRequest();
 			newsRequest.open("get", "http://content.guardianapis.com/search?q=" + country + "&from-date=2016-01-01&api-key=f941d0d2-0ab3-419c-b9df-c1107595e92b", true);
 			newsRequest.send();
 			newsRequest.onload = function() {
-				JSON.parse(this.responseText).response.results.forEach(function(item) {
-					var newsParagraph = document.createElement("p");
-					var newsLink = document.createElement("a");
-					newsPanel.appendChild(newsParagraph);
-					newsParagraph.appendChild(newsLink)
-					newsLink.innerHTML = item.webTitle;
-					newsLink.href = item.webUrl;
-				});
-			}
+			JSON.parse(this.responseText).response.results.forEach(function(item) {
+						var row = document.createElement("tr");
+						var td  = document.createElement("td");
+						row.appendChild(td);
+						tbody.appendChild(row);
+						var newsLink = document.createElement("a");
+						td.appendChild(newsLink);
+						newsLink.innerHTML = item.webTitle;
+						newsLink.href = item.webUrl;
+					});
+				}
 		}
 
 	
