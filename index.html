@@ -10,7 +10,7 @@
 		</style>
 	</head>
 	<body>
-		<input type = "text" list = "countryList" style = "position : absolute ; width : 10vw; height : 2vw ; left : 30vw;" onchange = "getGithubCountryRepo(this.value)">
+		<input type = "text" list = "countryList" style = "position : absolute ; width : 10vw; height : 2vw ; left : 26.5vw;" onchange = "getGithubCountryRepo(this.value)">
 	  <script>
 		
 			//these two variables will help with prediction the country name
@@ -120,13 +120,14 @@
 					countryRow6.appendChild(weather);
 					countryRow7.appendChild(weather2);
 					infoTable.style.position = "absolute";
-					infoTable.style.left = "42vw";
+					infoTable.style.left = "38vw";
 					infoTable.style.height = "25vw";
 					infoTable.style.border = "solid 2px red";
 					
 					for (var j = 0; i < JSON.parse(this.responseText).length; j++) { 
 						if (JSON.parse(this.responseText)[j].name.common === country) {
 						  var officialName = JSON.parse(this.responseText)[j].name.official;
+							var commonName = JSON.parse(this.responseText)[j].name.common;
 							var latitudeLongitude = JSON.parse(this.responseText)[j].latlng;
 							countryCurrency.innerHTML = "Currency = " + JSON.parse(this.responseText)[j].currency;
 							countryCoordinates.innerHTML = "Latitude = " + latitudeLongitude[0] + "</br>" + "Longitude = " + latitudeLongitude[1];
@@ -151,14 +152,14 @@
 										if (i > 0){
 											i -= 5;
 											max -= 5;
-											getFlickrPhotos(officialName, i, max);
+											getFlickrPhotos(commonName, i, max);
 										}	
 									}
 								}
-								if (max <= 30){
+								if (max <= 100){
 									i += 5;
 									max += 5;
-									getFlickrPhotos(officialName, i, max);
+									getFlickrPhotos(commonName, i, max);
 								}
 							}
 							break;
@@ -191,79 +192,86 @@
 					document.body.appendChild(photoSet);
 				}
 				
-					var makeFlickrRequest = new XMLHttpRequest();
-					makeFlickrRequest.open("get", 'https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key='+
-					'	d25561a9209c49fa69fe6e813cb922fc&tags=' +country + '&extras=url_l&format=json&nojsoncallback=1', true);
-					makeFlickrRequest.send();
-					makeFlickrRequest.onload = function() {
-						for (i = i ; i < max ; i++){
-							var photoFrame = document.createElement("photo");
-							photoSet.appendChild(photoFrame);
-							photoFrame.style.position = "relative";
-							photoFrame.style.left = init + 19 + "vw";
-							photoFrame.innerHTML = "<img src = 	" + JSON.parse(this.responseText).photos.photo[i].url_l + " " + "style = 'border : solid 0px blue ;width : 19vw ; height : 19vw;'" + "/>"
+				var makeFlickrRequest = new XMLHttpRequest();
+				makeFlickrRequest.open("get", 'https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key='+
+				'	d25561a9209c49fa69fe6e813cb922fc&tags=' +country + '&extras=url_l&format=json&nojsoncallback=1', true);
+				makeFlickrRequest.send();
+				makeFlickrRequest.onload = function() {
+					for (i = i ; i < max ; i++){
+						if (JSON.parse(this.responseText).photos.photo[i]) {
+							if (JSON.parse(this.responseText).photos.photo[i].url_l) {
+								if(JSON.parse(this.responseText).photos.photo[i]){
+									var photoFrame = document.createElement("photo");
+									photoSet.appendChild(photoFrame);
+									photoFrame.style.position = "relative";
+									photoFrame.style.left = init + 19 + "vw";
+									photoFrame.innerHTML = "<img src = 	" + JSON.parse(this.responseText).photos.photo[i].url_l + " " + "style = 'border : solid 0px blue ;width : 19vw ; height : 19vw;'" + "/>"
+								}	
+							}
 						}
 					}
 				}
+			}
 			
 
-		function drawGoogleMap(latitudeLongitude, area) {
-			var latitude = latitudeLongitude[0];
-			var longitude = latitudeLongitude[1];
-			var zoom;
-			
-			if (area > 5000000){
-				zoom = 3;
-			} else if (area > 1000000) {
-				zoom = 4;
-			} else {
-				zoom = 6;
+			function drawGoogleMap(latitudeLongitude, area) {
+				var latitude = latitudeLongitude[0];
+				var longitude = latitudeLongitude[1];
+				var zoom;
+				
+				if (area > 5000000){
+					zoom = 3;
+				} else if (area > 1000000) {
+					zoom = 4;
+				} else {
+					zoom = 6;
+				}
+				if(!googleStaticMap){
+					googleStaticMap = document.createElement("photo");
+				} else {
+					document.body.removeChild(googleStaticMap);
+					googleStaticMap = document.createElement("photo");
+				}
+				
+				document.body.appendChild(googleStaticMap);
+				googleStaticMap.innerHTML = "<img src = " + 'https://maps.googleapis.com/maps/api/staticmap?' + 'center=' + latitude + ',' + longitude +'&' +
+				'zoom=' + zoom +'&size=600x300&maptype=roadmap&markers=color:green%7Clabel:G%7C' + latitude + ',' + longitude + " " + "style = 'postion : absolute ; top : 0px;width : 25vw ; height : 25vw;'" + '/>';
 			}
-			if(!googleStaticMap){
-				googleStaticMap = document.createElement("photo");
-			} else {
-				document.body.removeChild(googleStaticMap);
-				googleStaticMap = document.createElement("photo");
-			}
-			document.body.appendChild(googleStaticMap);
-			googleStaticMap.innerHTML = "<img src = " + 'https://maps.googleapis.com/maps/api/staticmap?' + 'center=' + latitude + ',' + longitude +'&' +
-			'zoom=' + zoom +'&size=600x300&maptype=roadmap&markers=color:green%7Clabel:G%7C' + latitude + ',' + longitude + " " + "style = 'postion : absolute ; top : 0px;width : 25vw ; height : 25vw;'" + '/>';
-		}
 		
 
 		
 		
-		//pull latest news from guardian api
-		function pullLatestNews(country) {
-			
-			if (!newsTable){
-				newsTable = document.createElement("table");
-			} else {
-				document.body.removeChild(newsTable);
-				newsTable = document.createElement("table");
-			}
-			
-			var tbody = document.createElement("tbody");
-			var row = document.createElement("tr");
-			var td = document.createElement("td");
-			var th = document.createElement("th");
-			
-			document.body.appendChild(newsTable);
-			newsTable.appendChild(tbody);
-			tbody.appendChild(row);
-			row.appendChild(th);
-			th.innerHTML = "NEWS";
-			newsTable.style.position = "absolute";
-			newsTable.style.left = "70vw";
-			newsTable.style.height = "50vh";	
-			newsTable.style.border = "solid 2px red";
-			newsTable.style.height = "25vw";
-			var newsRequest = new XMLHttpRequest();
-			
-			newsRequest.open("get", "http://content.guardianapis.com/search?q=" + country + "&from-date=2016-01-01&api-key=f941d0d2-0ab3-419c-b9df-c1107595e92b", true);
-			newsRequest.send();
-			newsRequest.onload = function() {
-				JSON.parse(this.responseText).response.results.forEach(function(item) {
+			//pull latest news from guardian api
+			function pullLatestNews(country) {
+				
+				if (!newsTable){
+					newsTable = document.createElement("table");
+				} else {
+					document.body.removeChild(newsTable);
+					newsTable = document.createElement("table");
+				}
+				
+				var tbody = document.createElement("tbody");
+				var row = document.createElement("tr");
+				var td = document.createElement("td");
+				var th = document.createElement("th");
+				
+				document.body.appendChild(newsTable);
+				newsTable.appendChild(tbody);
+				tbody.appendChild(row);
+				row.appendChild(th);
+				th.innerHTML = "NEWS";
+				newsTable.style.position = "absolute";
+				newsTable.style.left = "70vw";
+				newsTable.style.height = "50vh";	
+				newsTable.style.border = "solid 2px red";
+				newsTable.style.height = "25vw";
+				var newsRequest = new XMLHttpRequest();
+				
+				newsRequest.open("get", "http://content.guardianapis.com/search?q=" + country + "&from-date=2016-01-01&api-key=f941d0d2-0ab3-419c-b9df-c1107595e92b", true);
+				newsRequest.send();
+				newsRequest.onload = function() {
+					JSON.parse(this.responseText).response.results.forEach(function(item) {
 						var row = document.createElement("tr");
 						var td  = document.createElement("td");
 						row.appendChild(td);
@@ -274,10 +282,10 @@
 						newsLink.href = item.webUrl;
 					});
 				}
-		}
+			}
+			
+			pullCountryNames();
 		
-		pullCountryNames();
-	
 		</script>
 	</body>
 </html>
