@@ -20,29 +20,14 @@
 			var buttonPanel = document.createElement("div");
 			var rightButton = document.createElement("button");
 			var leftButton = document.createElement("button");
-			
-			//setting country's news in a table
-			var newsTable = document.createElement("table");
-			var tbody = document.createElement("tbody");
-			var row  = document.createElement("tr");
-			var row2  = document.createElement("tr");
-			var row3  = document.createElement("tr");
-			var row4  = document.createElement("tr");
-			var td = document.createElement("td");
-			var th = document.createElement("th");
-			
+			var newsTable;
+
 			//photoSet is a panel to set the photo on
 			var photoSet;
 			var googleStaticMap;
-			
+		
 			var infoTable;
 			
-			document.body.appendChild(newsTable);
-			newsTable.appendChild(tbody);
-			tbody.appendChild(row);
-			row.appendChild(th);
-			tbody.appendChild(row);
-			th.innerHTML = "NEWS";
 			document.body.appendChild(countryList);
 			countryList.id = "countryList";
 			document.body.appendChild(buttonPanel);
@@ -57,11 +42,7 @@
 			rightButton.style.width = "2.5vw";
 			rightButton.style.height = "1.5vw";
 			buttonPanel.appendChild(leftButton);
-			newsTable.style.position = "absolute";
-			newsTable.style.left = "70vw";
-			newsTable.style.height = "50vh";	
-			newsTable.style.border = "solid 2px red";
-			newsTable.style.height = "25vw";
+			
 			
 			//this function help build a text predicter in the input box
 			function pullCountryNames() {
@@ -139,7 +120,7 @@
 					countryRow6.appendChild(weather);
 					countryRow7.appendChild(weather2);
 					infoTable.style.position = "absolute";
-					infoTable.style.left = "45vw";
+					infoTable.style.left = "42vw";
 					infoTable.style.height = "25vw";
 					infoTable.style.border = "solid 2px red";
 					
@@ -149,14 +130,14 @@
 							var latitudeLongitude = JSON.parse(this.responseText)[j].latlng;
 							countryCurrency.innerHTML = "Currency = " + JSON.parse(this.responseText)[j].currency;
 							countryCoordinates.innerHTML = "Latitude = " + latitudeLongitude[0] + "</br>" + "Longitude = " + latitudeLongitude[1];
-							countryArea.innerHTML = "Area = " + JSON.parse(this.responseText)[j].area + "Square Kilometer";
+							countryArea.innerHTML = "Area = " + JSON.parse(this.responseText)[j].area + " Square Kilometer";
 							countryRegion.innerHTML = "Region = " + JSON.parse(this.responseText)[j].region;
 							countryCapital.innerHTML = "Capital City = " + JSON.parse(this.responseText)[j].capital;
 							
 							//call weather, guardian and googleStaticMap apis
 							getWeather(latitudeLongitude, weather, weather2);
 							pullLatestNews(country);
-							drawGoogleMap(latitudeLongitude);
+							drawGoogleMap(latitudeLongitude, JSON.parse(this.responseText)[j].area);
 							
 							rightButton.onclick = function() {
 								if (i === 0) {
@@ -226,9 +207,18 @@
 				}
 			
 
-		function drawGoogleMap(latitudeLongitude) {
+		function drawGoogleMap(latitudeLongitude, area) {
 			var latitude = latitudeLongitude[0];
 			var longitude = latitudeLongitude[1];
+			var zoom;
+			
+			if (area > 5000000){
+				zoom = 3;
+			} else if (area > 1000000) {
+				zoom = 4;
+			} else {
+				zoom = 6;
+			}
 			if(!googleStaticMap){
 				googleStaticMap = document.createElement("photo");
 			} else {
@@ -237,7 +227,7 @@
 			}
 			document.body.appendChild(googleStaticMap);
 			googleStaticMap.innerHTML = "<img src = " + 'https://maps.googleapis.com/maps/api/staticmap?' + 'center=' + latitude + ',' + longitude +'&' +
-			'zoom=6&size=600x300&maptype=roadmap&markers=color:green%7Clabel:G%7C' + latitude + ',' + longitude + " " + "style = 'postion : absolute ; top : 0px;width : 25vw ; height : 25vw;'" + '/>';
+			'zoom=' + zoom +'&size=600x300&maptype=roadmap&markers=color:green%7Clabel:G%7C' + latitude + ',' + longitude + " " + "style = 'postion : absolute ; top : 0px;width : 25vw ; height : 25vw;'" + '/>';
 		}
 		
 
@@ -246,7 +236,30 @@
 		//pull latest news from guardian api
 		function pullLatestNews(country) {
 			
+			if (!newsTable){
+				newsTable = document.createElement("table");
+			} else {
+				document.body.removeChild(newsTable);
+				newsTable = document.createElement("table");
+			}
+			
+			var tbody = document.createElement("tbody");
+			var row = document.createElement("tr");
+			var td = document.createElement("td");
+			var th = document.createElement("th");
+			
+			document.body.appendChild(newsTable);
+			newsTable.appendChild(tbody);
+			tbody.appendChild(row);
+			row.appendChild(th);
+			th.innerHTML = "NEWS";
+			newsTable.style.position = "absolute";
+			newsTable.style.left = "70vw";
+			newsTable.style.height = "50vh";	
+			newsTable.style.border = "solid 2px red";
+			newsTable.style.height = "25vw";
 			var newsRequest = new XMLHttpRequest();
+			
 			newsRequest.open("get", "http://content.guardianapis.com/search?q=" + country + "&from-date=2016-01-01&api-key=f941d0d2-0ab3-419c-b9df-c1107595e92b", true);
 			newsRequest.send();
 			newsRequest.onload = function() {
