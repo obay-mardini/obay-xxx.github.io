@@ -68,7 +68,17 @@
 				var countryRegion = document.createElement("td");
 				var countryCapital = document.createElement("td");
 				var countryCurrency = document.createElement("td");
-				var countryCoordinates = document.createElement("td");
+				var countryLatitude = document.createElement("td");
+				var countryLongitude = document.createElement("td");
+				td1 = document.createElement("td");
+			  td2 = document.createElement("td");
+			  td3 = document.createElement("td");
+			  td4 = document.createElement("td");
+			  td5 = document.createElement("td");
+			  td6 = document.createElement("td");
+			  td7 = document.createElement("td");
+			  td8 = document.createElement("td");
+				td = [td1, td2, td3, td4, td5, td6, td7, td8];
 				var countryRow = document.createElement("tr");
 				var countryRow2 = document.createElement("tr");
 				var countryRow3 = document.createElement("tr");
@@ -76,12 +86,16 @@
 				var countryRow5 = document.createElement("tr");
 				var countryRow6 = document.createElement("tr");	
 				var countryRow7 = document.createElement("tr");
+				var countryRow8 = document.createElement("tr");
+				
+				
 				var infoTableHeader = document.createElement("tr");
+				var newsHeader = document.createElement("th")
 				var infoTableHeaderData = document.createElement("th");
 				weather = document.createElement("td");
 				weather2 = document.createElement("td");
 			
-			if (photoSet) {
+				if (photoSet) {
 					document.body.removeChild(photoSet);
 					photoSet = document.createElement("div");
 					document.body.appendChild(photoSet);
@@ -89,9 +103,12 @@
 			
 				if (!infoTable){
 					infoTable = document.createElement("table");
+					newsTable = document.createElement("table");
 				} else {
 					document.body.removeChild(infoTable);
 					infoTable = document.createElement("table");
+					document.body.removeChild(newsTable);
+					newsTable = document.createElement("table");
 				}
 				
 				//make a xhr request to a github repo to get information about the desired country
@@ -104,7 +121,10 @@
 					document.body.appendChild(infoTable);		
 					infoTable.appendChild(infoTableHeader);
 					infoTableHeader.appendChild(infoTableHeaderData);
+					infoTableHeader.appendChild(newsHeader);
+					infoTableHeader.appendChild(newsHeader);
 					infoTableHeaderData.innerText = "General Information";
+					newsHeader.innerText = "NEWS";
 					infoTable.appendChild(countryRow);
 					infoTable.appendChild(countryRow2);
 					infoTable.appendChild(countryRow3);
@@ -112,33 +132,47 @@
 					infoTable.appendChild(countryRow5);
 					infoTable.appendChild(countryRow6);
 					infoTable.appendChild(countryRow7);
+					infoTable.appendChild(countryRow8);
 					countryRow.appendChild(countryArea);
 					countryRow2.appendChild(countryRegion);
 					countryRow3.appendChild(countryCapital);
-					countryRow4.appendChild(countryCoordinates);
-					countryRow5.appendChild(countryCurrency);
-					countryRow6.appendChild(weather);
-					countryRow7.appendChild(weather2);
+					countryRow4.appendChild(countryLatitude);
+					countryRow5.appendChild(countryLongitude);
+					countryRow6.appendChild(countryCurrency);
+					countryRow7.appendChild(weather);
+					countryRow8.appendChild(weather2);
+					countryRow.appendChild(td1);
+					countryRow2.appendChild(td2);
+					countryRow3.appendChild(td3);
+					countryRow4.appendChild(td4);
+					countryRow5.appendChild(td5);
+					countryRow6.appendChild(td6);
+					countryRow7.appendChild(td7);
+					countryRow8.appendChild(td8);
 					infoTable.style.position = "absolute";
 					infoTable.style.left = "38vw";
 					infoTable.style.height = "25vw";
-					infoTable.style.border = "solid 2px red";
+					infoTable.style.width = "60vw";
+					infoTable.border = "solid 2px red";
+					infoTable.cellSpacing = "15";
 					
 					for (var j = 0; i < JSON.parse(this.responseText).length; j++) { 
 						if (JSON.parse(this.responseText)[j].name.common === country) {
-						  var officialName = JSON.parse(this.responseText)[j].name.official;
-							var commonName = JSON.parse(this.responseText)[j].name.common;
-							var latitudeLongitude = JSON.parse(this.responseText)[j].latlng;
-							countryCurrency.innerHTML = "Currency = " + JSON.parse(this.responseText)[j].currency;
-							countryCoordinates.innerHTML = "Latitude = " + latitudeLongitude[0] + "</br>" + "Longitude = " + latitudeLongitude[1];
-							countryArea.innerHTML = "Area = " + JSON.parse(this.responseText)[j].area + " Square Kilometer";
-							countryRegion.innerHTML = "Region = " + JSON.parse(this.responseText)[j].region;
-							countryCapital.innerHTML = "Capital City = " + JSON.parse(this.responseText)[j].capital;
+							var currentCountry = JSON.parse(this.responseText)[j];
+						  var officialName = currentCountry.name.official;
+							var commonName = currentCountry.name.common;
+							var latitudeLongitude = currentCountry.latlng;
+							countryCurrency.innerHTML = "Currency = " + currentCountry.currency;
+							countryLatitude.innerHTML = "Latitude = " + latitudeLongitude[0];
+							countryLongitude.innerHTML = "Longitude = " + latitudeLongitude[1];
+							countryArea.innerHTML = "Area = " + currentCountry.area + " Square Kilometer";
+							countryRegion.innerHTML = "Region = " + currentCountry.region;
+							countryCapital.innerHTML = "Capital City = " + currentCountry.capital;
 							
 							//call weather, guardian and googleStaticMap apis
 							getWeather(latitudeLongitude, weather, weather2);
 							pullLatestNews(country);
-							drawGoogleMap(latitudeLongitude, JSON.parse(this.responseText)[j].area);
+							drawGoogleMap(latitudeLongitude, currentCountry.area);
 							
 							rightButton.onclick = function() {
 								if (i === 0) {
@@ -244,44 +278,18 @@
 		
 		
 			//pull latest news from guardian api
-			function pullLatestNews(country) {
-				
-				if (!newsTable){
-					newsTable = document.createElement("table");
-				} else {
-					document.body.removeChild(newsTable);
-					newsTable = document.createElement("table");
-				}
-				
-				var tbody = document.createElement("tbody");
-				var row = document.createElement("tr");
-				var td = document.createElement("td");
-				var th = document.createElement("th");
-				
-				document.body.appendChild(newsTable);
-				newsTable.appendChild(tbody);
-				tbody.appendChild(row);
-				row.appendChild(th);
-				th.innerHTML = "NEWS";
-				newsTable.style.position = "absolute";
-				newsTable.style.left = "70vw";
-				newsTable.style.height = "50vh";	
-				newsTable.style.border = "solid 2px red";
-				newsTable.style.height = "25vw";
+			function pullLatestNews(country) {		
 				var newsRequest = new XMLHttpRequest();
-				
 				newsRequest.open("get", "http://content.guardianapis.com/search?q=" + country + "&from-date=2016-01-01&api-key=f941d0d2-0ab3-419c-b9df-c1107595e92b", true);
 				newsRequest.send();
 				newsRequest.onload = function() {
-					JSON.parse(this.responseText).response.results.forEach(function(item) {
-						var row = document.createElement("tr");
-						var td  = document.createElement("td");
-						row.appendChild(td);
-						tbody.appendChild(row);
+					JSON.parse(this.responseText).response.results.forEach(function(item, index) {
+						if (index < 8){
 						var newsLink = document.createElement("a");
-						td.appendChild(newsLink);
+						td[index].appendChild(newsLink);
 						newsLink.innerHTML = item.webTitle;
 						newsLink.href = item.webUrl;
+						}
 					});
 				}
 			}
