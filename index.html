@@ -26,9 +26,7 @@
 			var googleStaticMap;
 		
 			var table;
-			var weather;
-			var weather2;
-			
+
 			//limit the number of flickr's photos at each request to be 5
 			var i = -5;
 			var max = 0;
@@ -104,8 +102,8 @@
 					}
 				}
 				td = [td1, td2, td3, td4, td5, td6, td7, td8];	
-			  weather = document.createElement("td");
-				weather2 = document.createElement("td");
+			  var weather = document.createElement("td");
+				var weather2 = document.createElement("td");
 				document.body.appendChild(buttonPanel);
 				
 				//clear the body from all the photos and tables and then add new ones
@@ -207,13 +205,15 @@
 			}	
 			
 			function getWeather(latitude, longitude, weather, weather2) {
+				console.log(weather2)
 				var makeWeatherRequest = new XMLHttpRequest();
 				makeWeatherRequest.open("get", 'http://api.openweathermap.org/data/2.5/weather?lat=' + latitude +
 				'&lon=' + longitude + '&appid=bd5bc1519755874543545ebe815796ba', true);
 				makeWeatherRequest.send();
 				makeWeatherRequest.onload = function() {
+					console.log(this)
 					weather.innerHTML = "Weather Description = " + JSON.parse(this.responseText).weather[0].description;
-					weather2.innerHTML	= "Temprature = " + (JSON.parse(this.responseText).main.temp - 273.15, 2).toFixed() + "  Celsius" ;
+					weather2.innerHTML	= "Temprature = " + (JSON.parse(this.responseText).main.temp - 273.15).toFixed(2) + "  Celsius" ;
 				}
 			}
 			
