@@ -7,33 +7,33 @@
 				margin : 0px;
 				margin-top : 0px;
 			}
+			
+
 		</style>
 	</head>
 	<body>
 		<input type = "text" list = "countryList" value = "choose a country" style = "position : absolute ; width : 10vw; height : 2vw ; left : 26.5vw;" onchange = "getGithubCountryRepo(this.value)">
 	  <script>
 		
-			//these two variables will help with prediction the country name
-			var countryInputBox = document.getElementById("inputBox");
-			var countryList = document.createElement("datalist");
-			
+			//these variables are for setting the buttons to switch between flickr's photos.
 			var buttonPanel = document.createElement("div");
 			var rightButton = document.createElement("button");
 			var leftButton = document.createElement("button");
 
-			//photoSet is a panel to set the photo on
+			//These three variables are the container in which the data and photos will be appeared.
 			var photoSet;
 			var googleStaticMap;
-		
 			var table;
 
-			//limit the number of flickr's photos at each request to be 5
+			//limit the number of flickr's photos at each request to be 5.
 			var i = -5;
 			var max = 0;
 						
-			//this function help build a text predicter in the input box
+			//build a text predictor in the input box.
 			function pullCountryNames() {	
 				var countryNamesRequest = new XMLHttpRequest();
+				var countryInputBox = document.getElementById("inputBox");
+				var countryList = document.createElement("datalist");
 				document.body.appendChild(countryList);
 				countryList.id = "countryList";
 				countryNamesRequest.open("get", 'https://raw.githubusercontent.com/mledoze/countries/master/countries.json', true);
@@ -49,6 +49,7 @@
 
 			//this is the main function 
 			function getGithubCountryRepo(country) {
+			
 				var countryRequest = new XMLHttpRequest();
 				var countryArea = document.createElement("td");
 				var countryRegion = document.createElement("td");
@@ -75,7 +76,11 @@
 				var tableHeader = document.createElement("tr");
 				var newsHeader = document.createElement("th")
 				var tableHeaderData = document.createElement("th");
-
+				var td = [td1, td2, td3, td4, td5, td6, td7, td8];	
+			  var weather = document.createElement("td");
+				var weather2 = document.createElement("td");
+				document.body.appendChild(buttonPanel);
+				
 				//activate rightButton onclick event
 				rightButton.onclick = function() {
 					if (i === 0) {
@@ -101,12 +106,8 @@
 						getFlickrPhotos(commonName, i, max);
 					}
 				}
-				td = [td1, td2, td3, td4, td5, td6, td7, td8];	
-			  var weather = document.createElement("td");
-				var weather2 = document.createElement("td");
-				document.body.appendChild(buttonPanel);
 				
-				//clear the body from all the photos and tables and then add new ones
+				//clear the body then add new elements
 				if (photoSet) {
 					document.body.removeChild(photoSet);
 					photoSet = document.createElement("div");
@@ -180,6 +181,7 @@
 					table.border = "solid 2px red";
 					table.cellSpacing = "15";
 					
+					//look for the input country information in the response object
 					for (var j = 0; i < JSON.parse(this.responseText).length; j++) { 
 						if (JSON.parse(this.responseText)[j].name.common === country) {
 							var currentCountry = JSON.parse(this.responseText)[j];
@@ -196,7 +198,7 @@
 							
 							//call weather, guardian and googleStaticMap apis
 							getWeather(latitude, longitude, weather, weather2);
-							pullLatestNews(country);
+							pullLatestNews(country, td);
 							drawGoogleMap(latitude, longitude, currentCountry.area);
 							break;
 						}
@@ -205,13 +207,11 @@
 			}	
 			
 			function getWeather(latitude, longitude, weather, weather2) {
-				console.log(weather2)
 				var makeWeatherRequest = new XMLHttpRequest();
 				makeWeatherRequest.open("get", 'http://api.openweathermap.org/data/2.5/weather?lat=' + latitude +
 				'&lon=' + longitude + '&appid=bd5bc1519755874543545ebe815796ba', true);
 				makeWeatherRequest.send();
 				makeWeatherRequest.onload = function() {
-					console.log(this)
 					weather.innerHTML = "Weather Description = " + JSON.parse(this.responseText).weather[0].description;
 					weather2.innerHTML	= "Temprature = " + (JSON.parse(this.responseText).main.temp - 273.15).toFixed(2) + "  Celsius" ;
 				}
@@ -268,11 +268,8 @@
 				'zoom=' + zoom +'&size=600x300&maptype=roadmap&markers=color:green%7Clabel:G%7C' + latitude + ',' + longitude + " " + "style = 'postion : absolute ; top : 0px;width : 25vw ; height : 25vw;'" + '/>';
 			}
 		
-
-		
-		
 			//pull latest news from guardian api
-			function pullLatestNews(country) {		
+			function pullLatestNews(country, td) {		
 				var newsRequest = new XMLHttpRequest();
 				newsRequest.open("get", "http://content.guardianapis.com/search?q=" + country + "&from-date=2016-01-01&api-key=f941d0d2-0ab3-419c-b9df-c1107595e92b", true);
 				newsRequest.send();
