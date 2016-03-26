@@ -8,17 +8,11 @@
 				margin-top : 0px;
 			}
 			
-
 		</style>
 	</head>
 	<body>
 		<input type = "text" list = "countryList" value = "choose a country" style = "position : absolute ; width : 10vw; height : 2vw ; left : 26.5vw;" onchange = "getGithubCountryRepo(this.value)">
 	  <script>
-		
-			//these variables are for setting the buttons to switch between flickr's photos.
-			var buttonPanel = document.createElement("div");
-			var rightButton = document.createElement("button");
-			var leftButton = document.createElement("button");
 
 			//These three variables are the container in which the data and photos will be appeared.
 			var photoSet;
@@ -26,10 +20,11 @@
 			var table;
 
 			//limit the number of flickr's photos at each request to be 5.
-			var i = -5;
-			var max = 0;
-						
-			//build a text predictor in the input box.
+
+			
+			var buttonPanel = document.createElement("div");
+			
+			//build a text predictor in the input box.	
 			function pullCountryNames() {	
 				var countryNamesRequest = new XMLHttpRequest();
 				var countryInputBox = document.getElementById("inputBox");
@@ -49,8 +44,14 @@
 
 			//this is the main function 
 			function getGithubCountryRepo(country) {
-			
+				
+				var i = -5;
+				var max = 0;
+				var rightButton = document.createElement("button");
+				var leftButton = document.createElement("button");
 				var countryRequest = new XMLHttpRequest();
+				
+				//the table's variables
 				var countryArea = document.createElement("td");
 				var countryRegion = document.createElement("td");
 				var countryCapital = document.createElement("td");
@@ -76,9 +77,11 @@
 				var tableHeader = document.createElement("tr");
 				var newsHeader = document.createElement("th")
 				var tableHeaderData = document.createElement("th");
-				var td = [td1, td2, td3, td4, td5, td6, td7, td8];	
+				var td = [td1, td2, td3, td4, td5, td6, td7, td8];
+				
 			  var weather = document.createElement("td");
 				var weather2 = document.createElement("td");
+			
 				document.body.appendChild(buttonPanel);
 				
 				//activate rightButton onclick event
@@ -95,6 +98,8 @@
 								i -= 5;
 								max -= 5;
 								getFlickrPhotos(commonName, i, max);
+							} else {
+								buttonPanel.removeChild(leftButton);
 							}	
 						}
 					} else {
@@ -124,7 +129,6 @@
 					googleStaticMap = document.createElement("photo");
 				}
 				
-
 				buttonPanel.appendChild(rightButton);	
 				buttonPanel.style.position = "absolute";
 				buttonPanel.style.top = "44vw";
@@ -219,7 +223,8 @@
 			
 			function getFlickrPhotos(country, i, max) {	
 				var init = -16.5;
-					if (!photoSet) {
+				
+				if (!photoSet) {
 					photoSet = document.createElement("div");
 					document.body.appendChild(photoSet);
 				} else {
@@ -236,22 +241,19 @@
 					for (i = i ; i < max ; i++){
 						if (JSON.parse(this.responseText).photos.photo[i]) {
 							if (JSON.parse(this.responseText).photos.photo[i].url_l) {
-								if(JSON.parse(this.responseText).photos.photo[i]){
-									var photoFrame = document.createElement("photo");
-									photoSet.appendChild(photoFrame);
-									photoFrame.style.position = "relative";
-									photoFrame.style.left = init + 19 + "vw";
-									var photoUrl = JSON.parse(this.responseText).photos.photo[i].url_l;
-									var photo = photoUrl.substr(0,photoUrl.length-5).concat("m").concat(photoUrl.substr(photoUrl.length-4));
-									photoFrame.innerHTML = "<img src = 	" + photo + " " + "style = 'border : solid 0px blue ;width : 19vw ; height : 19vw;'" + "/>"
-								}	
+								var photoFrame = document.createElement("photo");
+								photoSet.appendChild(photoFrame);
+								photoFrame.style.position = "relative";
+								photoFrame.style.left = init + 19 + "vw";
+								var photoUrl = JSON.parse(this.responseText).photos.photo[i].url_l;
+								var photo = photoUrl.substr(0,photoUrl.length-5).concat("m").concat(photoUrl.substr(photoUrl.length-4));
+								photoFrame.innerHTML = "<img src = 	" + photo + " " + "style = 'border : solid 0px blue ;width : 19vw ; height : 19vw;'" + "/>"
 							}
 						}
 					}
 				}
 			}
 			
-
 			function drawGoogleMap(latitude, longitude, area) {
 				var zoom;
 				
