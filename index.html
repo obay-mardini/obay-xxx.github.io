@@ -7,57 +7,75 @@
 				margin : 0px;
 				margin-top : 0px;
 			}
-			
+	
 		</style>
 	</head>
 	<body>
-		<input type = "text" list = "countryList" value = "choose a country" style = "position : absolute ; width : 10vw; height : 2vw ; left : 26.5vw;" onchange = "getGithubCountryRepo(this.value)">
 	  <script>
-
-			//These three variables are the container in which the data and photos will be appeared.
+		
+			var input = document.createElement("input");
+			var buttonPanel = document.createElement("div");
+			var photoIndex;			
+			
+			//These three variables are the container in which the data and photos will be presented.
 			var photoSet;
 			var googleStaticMap;
 			var table;
-
-			//limit the number of flickr's photos at each request to be 5.
-
 			
-			var buttonPanel = document.createElement("div");
+			// set attribute, style and anchor the input element with a list "countryList"
+			input.style.position = "absolute";
+			input.style.width = 10 + "vw";
+			input.style.height = 2 + "vw";
+			input.style.left = 26.5 + "vw";
+			input.setAttribute("list", "countryList");
+			input.type = "text";
+			input.placeholder = "choose a country";
+			input.setAttribute("onchange", "getGithubCountryRepo(this.value)");
+			document.body.appendChild(input);
 			
 			//build a text predictor in the input box.	
 			function pullCountryNames() {	
-				var countryNamesRequest = new XMLHttpRequest();
+				var countriesNamesRequest = new XMLHttpRequest();
 				var countryInputBox = document.getElementById("inputBox");
 				var countryList = document.createElement("datalist");
+				
+				// assign an id to the datalist element which is equal to the list value of input element, so input element can have access to the datalist.
 				document.body.appendChild(countryList);
 				countryList.id = "countryList";
-				countryNamesRequest.open("get", 'https://raw.githubusercontent.com/mledoze/countries/master/countries.json', true);
-				countryNamesRequest.send();
-				countryNamesRequest.onload = function() {
+				countriesNamesRequest.open("get", 'https://raw.githubusercontent.com/mledoze/countries/master/countries.json', true);
+				countriesNamesRequest.send();
+				
+				// push countries names data to the countryList to be called when a user write a character in the input box 
+				countriesNamesRequest.onload = function() {
 					JSON.parse(this.responseText).forEach(function(countryItem) {
 						var option = document.createElement("option");
 						countryList.appendChild(option);
 						option.value = countryItem.name.common;
 					});
-				}
+				};
 			}
-
-			//this is the main function 
-			function getGithubCountryRepo(country) {
-				
-				var i = -5;
-				var max = 0;
-				var rightButton = document.createElement("button");
-				var leftButton = document.createElement("button");
+			
+			// this function is called when a user input a country name in the input box. And it maps the asked country name to helper functions in order to show the requested information.
+			function getGithubCountryRepo(country) {	
 				var countryRequest = new XMLHttpRequest();
 				
-				//the table's variables
+				// maximum helps to fix the numbers of presented photos to five photo at each request.
+				var maximum = 0;
+				
+				var next = document.createElement("button");
+				var back = document.createElement("button");
+				
+				// table's variables for the General Information section
 				var countryArea = document.createElement("td");
 				var countryRegion = document.createElement("td");
 				var countryCapital = document.createElement("td");
 				var countryCurrency = document.createElement("td");
 				var countryLatitude = document.createElement("td");
 				var countryLongitude = document.createElement("td");
+				var weather = document.createElement("td");
+				var weather2 = document.createElement("td");
+				
+				// table's variables for the News section
 				var td1 = document.createElement("td");
 			  var td2 = document.createElement("td");
 			  var td3 = document.createElement("td");
@@ -66,6 +84,8 @@
 			  var td6 = document.createElement("td");
 			  var td7 = document.createElement("td");
 			  var td8 = document.createElement("td");
+				
+				// setting up table's rows
 				var countryRow = document.createElement("tr");
 				var countryRow2 = document.createElement("tr");
 				var countryRow3 = document.createElement("tr");
@@ -79,73 +99,79 @@
 				var tableHeaderData = document.createElement("th");
 				var td = [td1, td2, td3, td4, td5, td6, td7, td8];
 				
-			  var weather = document.createElement("td");
-				var weather2 = document.createElement("td");
-			
+				photoIndex = -5;
 				document.body.appendChild(buttonPanel);
+
+				// when a user click on the next button then the application present new five photos from flickr api.
+				next.onclick = function() {
 				
-				//activate rightButton onclick event
-				rightButton.onclick = function() {
-					if (i === 0) {
-						buttonPanel.appendChild(leftButton);
-						leftButton.innerText = "back";
-						leftButton.style.position = "absolute"
-						leftButton.style.left = "50%";
-						leftButton.style.width = "50%";
-						leftButton.style.height = "2.5vw";
-						leftButton.onclick = function() {
-							if (i > 0){
-								i -= 5;
-								max -= 5;
-								getFlickrPhotos(commonName, i, max);
+					// if the application has shown already ten photos then add a back button to the buttonPanel
+					if (photoIndex === 0) {
+						buttonPanel.appendChild(back);
+						back.innerText = "back";
+						back.style.position = "absolute"
+						back.style.left = "50%";
+						back.style.width = "50%";
+						back.style.height = "2.5vw";
+						
+						// when the user click on back button then the current photos will be deleted and five photos will be presented.
+						back.onclick = function() {
+							if (photoIndex > 0) {
+								photoIndex -= 5;
+								maximum -= 5;
+								getFlickrPhotos(commonName, photoIndex, maximum);
 							} else {
-								buttonPanel.removeChild(leftButton);
+								buttonPanel.removeChild(back);
 							}	
 						}
+					
+					// when pressing the next button for the first time change the innerText to "next"
 					} else {
-						rightButton.innerText = "next";
+						next.innerText = "next";
 					}
-					if (max <= 100){
-						i += 5;
-						max += 5;
-						getFlickrPhotos(commonName, i, max);
+					
+					// limit the number of presented photos to 100
+					if (maximum <= 100) {
+						photoIndex += 5;
+						maximum += 5;
+						getFlickrPhotos(commonName, photoIndex, maximum);
 					}
 				}
 				
-				//clear the body then add new elements
+				// when the user request information for a new country then delete all previous country related element and information from the screen
 				if (photoSet) {
 					document.body.removeChild(photoSet);
 					photoSet = document.createElement("div");
 					document.body.appendChild(photoSet);
 				}
 			
-				if (!table){
-					table = document.createElement("table");
-					googleStaticMap = document.createElement("photo");
-				} else {
+				if (table){
 					document.body.removeChild(table);
 					table = document.createElement("table");
 					document.body.removeChild(googleStaticMap);
 					googleStaticMap = document.createElement("photo");
+				} else {
+					table = document.createElement("table");
+					googleStaticMap = document.createElement("photo");					
 				}
 				
-				buttonPanel.appendChild(rightButton);	
+				buttonPanel.appendChild(next);	
 				buttonPanel.style.position = "absolute";
 				buttonPanel.style.top = "44vw";
 				buttonPanel.style.left = "40.5vw";
 				buttonPanel.style.width = "19vw";
-				rightButton.innerText = "watch photos";
-				rightButton.style.position = "absolute";
-				rightButton.style.left = "0vw";
-				rightButton.style.width = "50%";
-				rightButton.style.height = "2.5vw";
-				buttonPanel.appendChild(leftButton);
+				next.innerText = "present photos";
+				next.style.position = "absolute";
+				next.style.left = "0vw";
+				next.style.width = "50%";
+				next.style.height = "2.5vw";
+				buttonPanel.appendChild(back);
 			
-				//make a xhr request to a github repo to get information about the desired country
+				//make a xhr request to a github repo to get information for the desired country
 				countryRequest.open("get", 'https://raw.githubusercontent.com/mledoze/countries/master/countries.json', true);
 				countryRequest.send();
 				countryRequest.onload = function() {
-					//build up a table to set the information on
+					//build up a table to present the information on
 					table = document.createElement("table");
 					document.body.appendChild(table);		
 					table.appendChild(tableHeader);
@@ -185,14 +211,14 @@
 					table.border = "solid 2px red";
 					table.cellSpacing = "15";
 					
-					//look for the input country information in the response object
-					for (var j = 0; i < JSON.parse(this.responseText).length; j++) { 
+					// pull the requested country's information from the response
+					for (var j = 0; j < JSON.parse(this.responseText).length; j++) { 
 						if (JSON.parse(this.responseText)[j].name.common === country) {
 							var currentCountry = JSON.parse(this.responseText)[j];
 						  var officialName = currentCountry.name.official;
 							commonName = currentCountry.name.common;
-							latitude = currentCountry.latlng[0];
-							longitude = currentCountry.latlng[1];
+							var latitude = currentCountry.latlng[0];
+							var longitude = currentCountry.latlng[1];
 							countryCurrency.innerHTML = "Currency = " + currentCountry.currency;
 							countryLatitude.innerHTML = "Latitude = " + latitude;
 							countryLongitude.innerHTML = "Longitude = " + longitude;
@@ -200,7 +226,7 @@
 							countryRegion.innerHTML = "Region = " + currentCountry.region;
 							countryCapital.innerHTML = "Capital City = " + currentCountry.capital;
 							
-							//call weather, guardian and googleStaticMap apis
+							// pull information from weather, news and googleStaticMap apis
 							getWeather(latitude, longitude, weather, weather2);
 							pullLatestNews(country, td);
 							drawGoogleMap(latitude, longitude, currentCountry.area);
@@ -221,7 +247,7 @@
 				}
 			}
 			
-			function getFlickrPhotos(country, i, max) {	
+			function getFlickrPhotos(country, photoIndex, maximum) {	
 				var init = -16.5;
 				
 				if (!photoSet) {
@@ -238,14 +264,14 @@
 				'	d25561a9209c49fa69fe6e813cb922fc&tags=' +country + '&extras=url_l&format=json&nojsoncallback=1', true);
 				makeFlickrRequest.send();
 				makeFlickrRequest.onload = function() {
-					for (i = i ; i < max ; i++){
-						if (JSON.parse(this.responseText).photos.photo[i]) {
-							if (JSON.parse(this.responseText).photos.photo[i].url_l) {
+					for (photoIndex = photoIndex ; photoIndex < maximum ; photoIndex++){
+						if (JSON.parse(this.responseText).photos.photo[photoIndex]) {
+							if (JSON.parse(this.responseText).photos.photo[photoIndex].url_l) {
 								var photoFrame = document.createElement("photo");
 								photoSet.appendChild(photoFrame);
 								photoFrame.style.position = "relative";
 								photoFrame.style.left = init + 19 + "vw";
-								var photoUrl = JSON.parse(this.responseText).photos.photo[i].url_l;
+								var photoUrl = JSON.parse(this.responseText).photos.photo[photoIndex].url_l;
 								var photo = photoUrl.substr(0,photoUrl.length-5).concat("m").concat(photoUrl.substr(photoUrl.length-4));
 								photoFrame.innerHTML = "<img src = 	" + photo + " " + "style = 'border : solid 0px blue ;width : 19vw ; height : 19vw;'" + "/>"
 							}
@@ -254,6 +280,7 @@
 				}
 			}
 			
+			// present the map in a img element on the screen
 			function drawGoogleMap(latitude, longitude, area) {
 				var zoom;
 				
@@ -270,7 +297,7 @@
 				'zoom=' + zoom +'&size=600x300&maptype=roadmap&markers=color:green%7Clabel:G%7C' + latitude + ',' + longitude + " " + "style = 'postion : absolute ; top : 0px;width : 25vw ; height : 25vw;'" + '/>';
 			}
 		
-			//pull latest news from guardian api
+			//pull latest news from guardian api and present it.
 			function pullLatestNews(country, td) {		
 				var newsRequest = new XMLHttpRequest();
 				newsRequest.open("get", "http://content.guardianapis.com/search?q=" + country + "&from-date=2016-01-01&api-key=f941d0d2-0ab3-419c-b9df-c1107595e92b", true);
