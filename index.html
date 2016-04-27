@@ -113,7 +113,7 @@
 			thirdInstruction.innerText = "Click on 'Present photos' button to see more photos of your desired country!";
 			
 			loader.innerText = "Loading...";
-													
+			next.innerHTML = "Present Photos";										
 			//build the text predictor
 			(function pullCountryNames() {	
 				var countriesNamesRequest = new XMLHttpRequest();
@@ -150,12 +150,13 @@
 				
 				// maximum helps to fix the numbers of presented photos to five photo in each request.
 				var maximum = 0;
-				
-				next.innerHTML = "Present Photos";				
+							
 				// clean the page incase there are content from the last request
 				mapsAndNewsBlock.style.visibility = "hidden";
 				howItWorks.style.visibility = "hidden";
 				loader.style.visibility = "visible";
+				
+				next.innerHTML = "Present Photos";
 				while (photoSet.firstChild) {
 					photoSet.removeChild(photoSet.firstChild)
 				}
