@@ -3,123 +3,101 @@
 	<title> HR Project </title>
 	<head>
 	</head>
-	<body>  
-	  <script>
-
+	<body>
+		<input id="input" list="countryList" type="text" placeholder="choose a country" onchange="getGithubCountryRepo(this.value)" style="position: absolute; width: 15vw; height: 2vw; left: 40vw;">
+		<datalist id="countryList"></datalist>
+		<div style="visibility: hidden; position: absolute; left: 50%; top: 50%; font-weight: bold; font-size: 32px;" id="loader">
+			Loading...
+		</div>
+		<div style="position: absolute; top: 5vw; left: 26.5vw; visibility: hidden;">
+			<h3>How it works:</h3>
+			<ol>
+				<li>Choose a country name from the list above to know the lattest news and infromation about the desired country!</li>
+				<li>Press Enter!</li>
+				<li>Click on 'Present photos' button to see more photos of your desired country!</li>
+			</ol>
+		</div>
+	  <div style="visibility: visible;" id="mapsAndNewsBlock">
+			<div id="mapBlock">
+				<photo style="position: absolute; left: 0px;" id="googleStaticMap">
+				</photo>
+			</div>
+			<div style="position: absolute; top: 3vw; left: 40vw; width: 20vw;" id="countryInfoBlock">
+				<h3 id="tableTitle">County's Info</h3>
+				<table style="height: 15vw; width: 15vw; border: 1px solid rgb(203, 203, 203); background-color: rgb(242, 242, 242);" id="table">
+				</table>
+				<h5 id="weatherBox"></h5>
+			</div>
+			<div style="position: absolute; left: 60vw; top: 3vw; width: 30vw;" id="countryNews">
+					<h3 id="newsHeader">NEWS</h3>
+					<ol id="newsList">
+					</ol>
+			</div>
+			<div style="position: absolute; top: 25vw;" id="photoSet">
+			</div>
+		</div>
+		<div style="position: absolute; top: 44vw; left: 40.5vw; width: 19vw;" id="buttonPanel">
+			<button style="position: absolute; left: 0vw; width: 50%; height: 2.5vw;" id="next"></button>
+			<button style="position: absolute; left: 50%; width: 50%; height: 2.5vw;" id="back">back</button>
+		</div>
+		
+		
+		<script>
+			
 			// setting up the HTML elements
-			var input = document.createElement("input");
-			var countryList = document.createElement("datalist");
-			var loader = document.createElement("div");
+			var input = document.getElementById("input");
+			var countryList = document.getElementById("countryList");
+			var loader = document.getElementById("loader");
 			var howItWorks = document.createElement("div");
 			var howItWorksTitle = document.createElement("h3");
 			var bodyInstruction = document.createElement("ol");
 			var firstInstruction = document.createElement("li");
 			var secondInstruction = document.createElement("li");
 			var thirdInstruction = document.createElement("li");
-			var mapsAndNewsBlock = document.createElement("div");
-			var mapBlock = document.createElement("div");
-			var googleStaticMap = document.createElement("photo");
-			var countryInfoBlock = document.createElement("div");
-			var weatherBox = document.createElement("h5");
-			var tableTitle = document.createElement("h3");
-			var table = document.createElement("table");
-			var countryNews = document.createElement("div");
-			var newsHeader = document.createElement("h3");
-			var newsList = document.createElement("ol");
-			var buttonPanel = document.createElement("div");
-			var next = document.createElement("button");
-			var back = document.createElement("button");		
-			var photoSet = document.createElement("div");
+			var countryInfoBlock = document.getElementById("countryInfoBlock");
+			var weatherBox = document.getElementById("weatherBox");
+			var tableTitle = document.getElementById("tableTitle");
+			var table = document.getElementById("table");
+			var countryNews = document.getElementById("countryNews");
+			var newsHeader = document.getElementById("newsHeader");
+			var newsList = document.getElementById("newsList");
+			var buttonPanel = document.getElementById("buttonPanel");
+			var next = document.getElementById("next");
+			var back = document.getElementById("back");		
+			var photoSet = document.getElementById("photoSet");
 			var countryPictures = [];
 			var countriesData = [];	
 			var photoIndex;
 			
 			// setting the content of the page
-			document.body.appendChild(input);
-			document.body.appendChild(countryList);
-			document.body.appendChild(loader);
 			document.body.appendChild(howItWorks);
-			document.body.appendChild(mapsAndNewsBlock);
-			mapsAndNewsBlock.appendChild(mapBlock);
-			mapBlock.appendChild(googleStaticMap);
-			mapsAndNewsBlock.appendChild(countryInfoBlock);
-			countryInfoBlock.appendChild(tableTitle);
-			countryInfoBlock.appendChild(table);
-			countryInfoBlock.appendChild(weatherBox);
-			mapsAndNewsBlock.appendChild(countryNews);
-			countryNews.appendChild(newsHeader);
-			countryNews.appendChild(newsList);
 			howItWorks.appendChild(howItWorksTitle);
 			howItWorks.appendChild(bodyInstruction);
 			bodyInstruction.appendChild(firstInstruction);
 			bodyInstruction.appendChild(secondInstruction);
 			bodyInstruction.appendChild(thirdInstruction);
-			document.body.appendChild(buttonPanel);
-			buttonPanel.appendChild(next);
-			buttonPanel.appendChild(back);
-			mapsAndNewsBlock.appendChild(photoSet);
 			
 			// Styling
 			document.body.style.margin = "0px";
-			newsHeader.innerText = "NEWS";
-			tableTitle.innerText = "County's Info"
-			countryNews.style.position = "absolute";
-			countryNews.style.left = "60vw";
-			countryNews.style.top = "3vw";
-			countryNews.style.width = "30vw";
-			countryInfoBlock.style.position = "absolute";
-			countryInfoBlock.style.top = "3vw";
-			countryInfoBlock.style.left = "40vw";
-			countryInfoBlock.style.width = "20vw";
+
 			loader.style.visibility = "hidden";
-			input.style.position = "absolute";
-			input.style.width = 15 + "vw";
-			input.style.height = 2 + "vw";
-			input.style.left = 40 + "vw";
-			input.setAttribute("list", "countryList");
-			input.type = "text";
-			input.placeholder = "choose a country";
-			input.setAttribute("onchange", "getGithubCountryRepo(this.value)");
 			howItWorks.style.position = "absolute";
 			howItWorks.style.top = "5vw";
 			howItWorks.style.left = "26.5vw"
-			loader.style.position = "absolute";
-			loader.style.left = "50%";
-			loader.style.top = "50%";
-			loader.style.fontWeight = "bold";
-			loader.style.fontSize = "32px";
-			table.style.height = "15vw";
-			table.style.width = "15vw";
-			table.style.border = "1px solid #cbcbcb";
-			table.style.backgroundColor = "#f2f2f2";
 			mapsAndNewsBlock.style.visibility = "hidden";
-			googleStaticMap.style.position = "absolute";	
-			googleStaticMap.style.left = "0px";				
-			buttonPanel.style.position = "absolute";
-			buttonPanel.style.top = "44vw";
-			buttonPanel.style.left = "40.5vw";
-			buttonPanel.style.width = "19vw";
-			next.style.position = "absolute";
-			next.style.left = "0vw";
-			next.style.width = "50%";
-			next.style.height = "2.5vw";
-			photoSet.style.position = "absolute";
-			photoSet.style.top = "25vw";
-			
+
 			// setting howItworks block's instructions
 			howItWorksTitle.innerText = "How it works:";
 			firstInstruction.innerText = "Choose a country name from the list above to know the lattest news and infromation about the desired country!";
 			secondInstruction.innerText = "Press Enter!";
 			thirdInstruction.innerText = "Click on 'Present photos' button to see more photos of your desired country!";
-			
-			loader.innerText = "Loading...";
-			next.innerHTML = "Present Photos";										
+
+													
 			//build the text predictor
 			(function pullCountryNames() {	
 				var countriesNamesRequest = new XMLHttpRequest();
 				
 				// assign an id to the datalist element which is equal to the list value of input element, so input element can have access to the datalist.
-				countryList.id = "countryList";
 				countriesNamesRequest.open("get", 'http://raw.githubusercontent.com/mledoze/countries/master/countries.json', true);
 				countriesNamesRequest.send();
 				
@@ -150,13 +128,12 @@
 				
 				// maximum helps to fix the numbers of presented photos to five photo in each request.
 				var maximum = 0;
-							
+				
+				next.innerHTML = "Present Photos";				
 				// clean the page incase there are content from the last request
 				mapsAndNewsBlock.style.visibility = "hidden";
 				howItWorks.style.visibility = "hidden";
 				loader.style.visibility = "visible";
-				
-				next.innerHTML = "Present Photos";
 				while (photoSet.firstChild) {
 					photoSet.removeChild(photoSet.firstChild)
 				}
@@ -168,13 +145,6 @@
 				
 					// if the application has shown already ten photos then attach a back button to the buttonPanel
 					if (photoIndex === 0) {
-						buttonPanel.appendChild(back);
-						back.innerText = "back";
-						back.style.position = "absolute"
-						back.style.left = "50%";
-						back.style.width = "50%";
-						back.style.height = "2.5vw";
-						
 						// when the user click on back button then the current photos will be deleted and five photos will be presented.
 						back.onclick = function() {
 							if (photoIndex > 0) {
