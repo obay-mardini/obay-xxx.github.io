@@ -1,0 +1,114 @@
+			body {
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        #container {
+            width: 90%;
+            margin: 0 auto;
+        }
+
+        #search-block {
+            text-align: center;
+            margin: 15px;
+        }
+
+        table {
+            border-collapse: collapse;
+            border: 1px solid #cbcbcb;
+            background-color: #f2f2f2;
+            width: 100%;
+        }
+
+            table td {
+                border-left: 1px solid #cbcbcb;
+                padding: 0.5em 1em;
+            }
+
+        #googleStaticMap {
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+
+        #loader {
+            visibility: hidden;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        #mapsAndNewsBlock {
+            visibility: hidden;
+        }
+
+        #weather-block {
+            margin-top: 10px;
+        }
+
+        #pageContent {
+            display: table-row;
+            width: 100%;
+        }
+
+        #mapBlock {
+            width: 40%;
+            display: table-cell;
+            vertical-align: top;
+        }
+
+        #countryInfoBlock {
+            width: 20%;
+            display: table-cell;
+            vertical-align: top;
+            padding: 10px;
+        }
+
+        #countryNews {
+            width: 40%;
+            display: table-cell;
+            vertical-align: top;
+        }
+
+        #photoSet {
+            width: 90%;
+            text-align: center;
+            margin: 0 auto;
+        }
+
+            #photoSet img {
+                max-height: 150px;
+                border-radius: 10px;
+                margin: 5px;
+            }
+
+        #buttonPanel {
+            margin: 15px auto;
+            max-width: 50%;
+            text-align: center;
+        }
+
+            #buttonPanel button {
+                width: 200px;
+                height: 35px;
+                cursor: pointer;
+            }
+
+        #input {
+            padding: 10px;
+            margin: 5px;
+            height: 30px;
+            width: 300px;
+            font-size: 1.2em;
+        }
+
+        label {
+            font-size: 1.4em;
+        }
+				
+				#back {
+					visibility: hidden;
+				}
+				
+				ul {
+					list-style-type:none;
+				}

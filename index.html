@@ -2,296 +2,54 @@
 <html>
 	<title> HR Project </title>
 	<head>
+		<link rel="stylesheet" href="css/style.css" type="text/css">
 	</head>
 	<body>
-		<input id="input" list="countryList" type="text" placeholder="choose a country" onchange="getGithubCountryRepo(this.value)" style="position: absolute; width: 15vw; height: 2vw; left: 40vw;">
-		<datalist id="countryList"></datalist>
-		<div style="visibility: hidden; position: absolute; left: 50%; top: 50%; font-weight: bold; font-size: 32px;" id="loader">
-			Loading...
-		</div>
-		<div style="position: absolute; top: 5vw; left: 26.5vw; visibility: hidden;">
-			<h3>How it works:</h3>
-			<ol>
-				<li>Choose a country name from the list above to know the lattest news and infromation about the desired country!</li>
-				<li>Press Enter!</li>
-				<li>Click on 'Present photos' button to see more photos of your desired country!</li>
-			</ol>
-		</div>
-	  <div style="visibility: visible;" id="mapsAndNewsBlock">
-			<div id="mapBlock">
-				<photo style="position: absolute; left: 0px;" id="googleStaticMap">
-				</photo>
+		<div id="container">
+			<div id="search-block">
+					<label for="input">Select a country: </label>
+					<input id="input" list="countryList" type="text" placeholder="Type country name" onchange="getGithubCountryRepo(this.value)">
+					<div id="loader">
+							LOADING...
+					</div>
+					<datalist id="countryList"></datalist>
+					<div id="howItWorks">
+						<h3>How it works:</h3>
+							<ul>
+								<li>1.Choose a country name from the list above to know the lattest news and infromation about the desired country!</li>
+								<li>2.Press Enter!</li>
+								<li>3.Click on 'Present photos' button to see more photos of your desired country!</li>
+							</ul>
+					</div>
 			</div>
-			<div style="position: absolute; top: 3vw; left: 40vw; width: 20vw;" id="countryInfoBlock">
-				<h3 id="tableTitle">County's Info</h3>
-				<table style="height: 15vw; width: 15vw; border: 1px solid rgb(203, 203, 203); background-color: rgb(242, 242, 242);" id="table">
-				</table>
-				<h5 id="weatherBox"></h5>
+			<div id="mapsAndNewsBlock">
+				<div id="pageContent">
+					<div id="mapBlock">
+						<h3>On The Map</h3>
+						<img id="googleStaticMap" src="">
+					</div>
+					<div id="countryInfoBlock">
+						<h3>Country Info</h3>
+						<table id="table"></table>
+						<div id="weather-block">
+							<span id="weatherBox"></span>
+						</div>
+					</div>
+					<div id="countryNews">
+						<h3>In The News</h3>
+						<ol id="newsList"></ol>
+					</div>
+				</div>
+				<div id="buttonPanel">
+					<button id="back">Back</button>
+					<button id="next">Next</button>
+				</div>
+				<div id="photoSet">
+				</div>
 			</div>
-			<div style="position: absolute; left: 60vw; top: 3vw; width: 30vw;" id="countryNews">
-					<h3 id="newsHeader">NEWS</h3>
-					<ol id="newsList">
-					</ol>
-			</div>
-			<div style="position: absolute; top: 25vw;" id="photoSet">
-			</div>
-		</div>
-		<div style="position: absolute; top: 44vw; left: 40.5vw; width: 19vw;" id="buttonPanel">
-			<button style="position: absolute; left: 0vw; width: 50%; height: 2.5vw;" id="next"></button>
-			<button style="position: absolute; left: 50%; width: 50%; height: 2.5vw;" id="back">back</button>
-		</div>
+    </div>
+	
+		<script type="text/javascript" src="javascript/javaScript.js"></script>
 		
-		
-		<script>
-			
-			// setting up the HTML elements
-			var input = document.getElementById("input");
-			var countryList = document.getElementById("countryList");
-			var loader = document.getElementById("loader");
-			var howItWorks = document.createElement("div");
-			var howItWorksTitle = document.createElement("h3");
-			var bodyInstruction = document.createElement("ol");
-			var firstInstruction = document.createElement("li");
-			var secondInstruction = document.createElement("li");
-			var thirdInstruction = document.createElement("li");
-			var countryInfoBlock = document.getElementById("countryInfoBlock");
-			var weatherBox = document.getElementById("weatherBox");
-			var tableTitle = document.getElementById("tableTitle");
-			var table = document.getElementById("table");
-			var countryNews = document.getElementById("countryNews");
-			var newsHeader = document.getElementById("newsHeader");
-			var newsList = document.getElementById("newsList");
-			var buttonPanel = document.getElementById("buttonPanel");
-			var next = document.getElementById("next");
-			var back = document.getElementById("back");		
-			var photoSet = document.getElementById("photoSet");
-			var countryPictures = [];
-			var countriesData = [];	
-			var photoIndex;
-			
-			// setting the content of the page
-			document.body.appendChild(howItWorks);
-			howItWorks.appendChild(howItWorksTitle);
-			howItWorks.appendChild(bodyInstruction);
-			bodyInstruction.appendChild(firstInstruction);
-			bodyInstruction.appendChild(secondInstruction);
-			bodyInstruction.appendChild(thirdInstruction);
-			
-			// Styling
-			document.body.style.margin = "0px";
-
-			loader.style.visibility = "hidden";
-			howItWorks.style.position = "absolute";
-			howItWorks.style.top = "5vw";
-			howItWorks.style.left = "26.5vw"
-			mapsAndNewsBlock.style.visibility = "hidden";
-
-			// setting howItworks block's instructions
-			howItWorksTitle.innerText = "How it works:";
-			firstInstruction.innerText = "Choose a country name from the list above to know the lattest news and infromation about the desired country!";
-			secondInstruction.innerText = "Press Enter!";
-			thirdInstruction.innerText = "Click on 'Present photos' button to see more photos of your desired country!";
-
-													
-			//build the text predictor
-			(function pullCountryNames() {	
-				var countriesNamesRequest = new XMLHttpRequest();
-				
-				// assign an id to the datalist element which is equal to the list value of input element, so input element can have access to the datalist.
-				countriesNamesRequest.open("get", 'http://raw.githubusercontent.com/mledoze/countries/master/countries.json', true);
-				countriesNamesRequest.send();
-				
-				// push countries names data to the countryList to be called when a user write a character in the input box 
-				countriesNamesRequest.onload = function() {
-					JSON.parse(this.responseText).forEach(function(countryItem) {
-						var option = document.createElement("option");
-						countryList.appendChild(option);
-						option.value = countryItem.name.common;
-						
-						// make an array with the country's information to pull the information from it.
-						countriesData.push({"Name" : countryItem.name.official, "common" : countryItem.name.common , "Curreny" : countryItem.currency , "Latitude" : countryItem.latlng[0] , "Longitude" : countryItem.latlng[1] ,
-						"Area" : countryItem.area , "Region" : countryItem.region, "Capital" : countryItem.capital });
-						
-					});
-				}
-				
-			})();
-			
-			// this function is fired when a user input a country name in the input box. And it maps the desired country name variable to helper functions in order to show the requested information.
-			function getGithubCountryRepo(country) {
-				if (country.length === 0) {
-					return;
-				}
-				
-
-				var countryRequest = new XMLHttpRequest();
-				
-				// maximum helps to fix the numbers of presented photos to five photo in each request.
-				var maximum = 0;
-				
-				next.innerHTML = "Present Photos";				
-				// clean the page incase there are content from the last request
-				mapsAndNewsBlock.style.visibility = "hidden";
-				howItWorks.style.visibility = "hidden";
-				loader.style.visibility = "visible";
-				while (photoSet.firstChild) {
-					photoSet.removeChild(photoSet.firstChild)
-				}
-				
-				photoIndex = -5;
-				
-				// when a user click on the "next" button then the application present new five photos from flickr api.
-				next.onclick = function() {
-				
-					// if the application has shown already ten photos then attach a back button to the buttonPanel
-					if (photoIndex === 0) {
-						// when the user click on back button then the current photos will be deleted and five photos will be presented.
-						back.onclick = function() {
-							if (photoIndex > 0) {
-								photoIndex -= 5;
-								maximum -= 5;
-								renderFlickrPhotos(commonName, photoIndex, maximum);
-							} else {
-								buttonPanel.removeChild(back);
-							}	
-						}
-					
-					// when pressing the next button for the first time change the innerText to "next"
-					} else {
-						next.innerText = "next";
-					}
-					
-					if (maximum < countryPictures.length - 5) {
-						photoIndex += 5;
-						maximum += 5;
-						renderFlickrPhotos(commonName, photoIndex, maximum);
-					}
-				}
-				
-				// Make calls to the helper functions to show the content on the screen
-				for (var j = 0; j < countriesData.length; j++) { 
-					var currentCountry = countriesData[j];
-					if (country === currentCountry.common) {
-						commonName = currentCountry.common;
-						renderCountryInfoTable(currentCountry);
-						getWeather(currentCountry.Latitude, currentCountry.Longitude);
-						drawGoogleMap(currentCountry.Latitude, currentCountry.Longitude, currentCountry.Area);
-						pullLatestNews(country);
-						getFlickrPhotos(country);
-						return;
-					}	
-					
-				}				
-					
-				alert(country + " is not a country!");
-			}
-			
-			function getWeather(latitude, longitude) {
-				var makeWeatherRequest = new XMLHttpRequest();
-				makeWeatherRequest.open("get", 'http://api.openweathermap.org/data/2.5/weather?lat=' + latitude +
-				'&lon=' + longitude + '&appid=bd5bc1519755874543545ebe815796ba', true);
-				makeWeatherRequest.send();
-				makeWeatherRequest.onload = function() {
-					weatherBox.innerHTML	= "Weather = " + (JSON.parse(this.responseText).main.temp - 273.15).toFixed(2) + "  Celsius" + "(" + JSON.parse(this.responseText).weather[0].description + ")" ;
-				}
-				
-			}
-			
-			//make an array of the URLs of the country's pictures
-			function getFlickrPhotos(country) {					
-				var makeFlickrRequest = new XMLHttpRequest();
-				makeFlickrRequest.open("get", 'https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key='+
-				'	d25561a9209c49fa69fe6e813cb922fc&tags=' +country + '&extras=url_l&format=json&nojsoncallback=1', true);
-				makeFlickrRequest.send();
-				
-				makeFlickrRequest.onload = function() {
-					countryPictures =  JSON.parse(this.responseText).photos.photo.filter(function(curentPhoto) {
-						if(curentPhoto.url_l){
-							return true;
-						}
-					}).map(function(curentPhoto) {
-						var url = curentPhoto.url_l;
-						return  url.substr(0, url.length - 5).concat("m").concat(url.substr(url.length - 4));
-					});
-				};
-			}
-			
-			function renderFlickrPhotos(country, photoIndex, maximum) {	
-				var init = -16.5;
-				while (photoSet.firstChild) {
-					photoSet.removeChild(photoSet.firstChild);
-				}
-
-				for (photoIndex; photoIndex < maximum; photoIndex ++){
-					var photoFrame = document.createElement("photo");
-					photoSet.appendChild(photoFrame);
-					photoFrame.style.position = "relative";
-					photoFrame.style.left = init + 19 + "vw";
-					var photo = countryPictures[photoIndex];
-					photoFrame.innerHTML = "<img src = 	" + photo + " " + "style = 'border : solid 0px blue ;width : 19vw ; height : 19vw;'" + "/>"
-				}
-					
-			}
-				
-			
-			
-			// present the map in an img element on the screen
-			function drawGoogleMap(latitude, longitude, area) {
-				var zoom;
-				if (area > 5000000){
-					zoom = 3;
-				} else if (area > 1000000) {
-					zoom = 4;
-				} else {
-					zoom = 6;
-				}
-				
-				googleStaticMap.innerHTML = "<img src = " + 'http://maps.googleapis.com/maps/api/staticmap?' + 'center=' + latitude + ',' + longitude +'&' +
-				'zoom=' + zoom +'&size=600x300&maptype=roadmap&markers=color:green%7Clabel:G%7C' + latitude + ',' + longitude + " " + "style = 'postion : absolute ; top : 0px;width : 25vw ; height : 25vw;'" + '/>';
-			}
-		
-			//pull latest news from guardian api and present it.
-			function pullLatestNews(country, td) {
-				var newsRequest = new XMLHttpRequest();
-				newsRequest.open("get", "http://content.guardianapis.com/search?q=" + country + "&from-date=2016-01-01&api-key=f941d0d2-0ab3-419c-b9df-c1107595e92b", true);
-				newsRequest.send();
-				
-				newsList.innerHTML = "";
-				newsRequest.onload = function() {
-					if(JSON.parse(this.responseText).response.status === "ok") {
-						JSON.parse(this.responseText).response.results.forEach(function(item, index) {
-								var list = document.createElement("li");
-								var newsLink = document.createElement("a");
-								newsList.appendChild(list);
-								list.appendChild(newsLink);
-								newsLink.innerHTML = item.webTitle;
-								newsLink.href = item.webUrl;			
-						});
-					}
-				}
-				
-				mapsAndNewsBlock.style.visibility = "visible";
-				loader.style.visibility = "hidden";
-			}
-			
-			function renderCountryInfoTable(countryInfo) {
-				while (table.rows.length > 0) {
-						table.deleteRow(0);
-				}
-				
-				// Setting up the table using data from countryInfo Object
-				for (var property in countryInfo) {
-					var row = table.insertRow();
-					var cell_1 = row.insertCell(0);
-					var cell_2 = row.insertCell(1);
-					cell_1.innerHTML = property;
-					cell_2.innerHTML = countryInfo[property];
-					cell_1.style.borderLeft = "3px solid #cbcbcb";
-					cell_2.style.borderLeft = "3px solid #cbcbcb";
-				}
-				
-			}
-			
-		</script>
 	</body>
 </html>
