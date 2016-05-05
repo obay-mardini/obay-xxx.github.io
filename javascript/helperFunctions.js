@@ -2,15 +2,15 @@
 	
 	//there are here five helper functions that send XHR requests to the desired Apis to get the required data. 
 	function getWeather(latitude, longitude) {
-					var makeWeatherRequest = new XMLHttpRequest();
-					makeWeatherRequest.open("get", 'http://api.openweathermap.org/data/2.5/weather?lat=' + latitude +
-					'&lon=' + longitude + '&appid=bd5bc1519755874543545ebe815796ba', true);
-					makeWeatherRequest.send();
-					makeWeatherRequest.onload = function() {
-						weatherBox.innerHTML	= "Weather = " + (JSON.parse(this.responseText).main.temp - 273.15).toFixed(2) + "  Celsius" + "(" + JSON.parse(this.responseText).weather[0].description + ")" ;
-					}
-					
-				}
+		var makeWeatherRequest = new XMLHttpRequest();
+		makeWeatherRequest.open("get", 'http://api.openweathermap.org/data/2.5/weather?lat=' + latitude +
+		'&lon=' + longitude + '&appid=bd5bc1519755874543545ebe815796ba', true);
+		makeWeatherRequest.send();
+		makeWeatherRequest.onload = function() {
+			weatherBox.innerHTML	= "Weather = " + (JSON.parse(this.responseText).main.temp - 273.15).toFixed(2) + "  Celsius" + "(" + JSON.parse(this.responseText).weather[0].description + ")" ;
+		}
+		
+	}
 				
 	//make an array of the URLs of the requested country's pictures
 	function getFlickrPhotos(country) {					

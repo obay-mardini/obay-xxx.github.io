@@ -10,7 +10,7 @@
 				countriesNamesRequest.open("get", 'http://raw.githubusercontent.com/mledoze/countries/master/countries.json', true);
 				countriesNamesRequest.send();
 				
-				// push countries names data to the countryList to be fired when a user write a character in the input box 
+				// push countries data to the countryList to be fired when a user write a character in the input box 
 				countriesNamesRequest.onload = function() {
 					JSON.parse(this.responseText).forEach(function(countryItem) {
 						var option = document.createElement("option");

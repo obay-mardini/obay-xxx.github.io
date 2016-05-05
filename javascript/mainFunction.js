@@ -5,17 +5,16 @@
 				}
 				
 				var maximum = 0;
-				
 				photoIndex = 0;
 				
-				// clear photoSet from last request's photos
+				// clear photoSet components from last request's photos
 				photoSet.innerHTML = "";
 				next.innerHTML = "Present Photos";
 				back.style.visibility = "hidden";
 				
 				var countryRequest = new XMLHttpRequest();		
 								
-				// clean the page incase there are content from the last request
+				// clean the page incase there is content from the last request
 				mapsAndNewsBlock.style.visibility = "hidden";
 				
 				howItWorks.style.visibility = "hidden";
@@ -51,7 +50,7 @@
 					
 				}
 				
-				// Make calls to the helper functions to show the content on the screen
+				// Make calls to helper functions to show the content on the screen
 				for (var j = 0; j < countriesData.length; j++) { 
 					var currentCountry = countriesData[j];
 					
