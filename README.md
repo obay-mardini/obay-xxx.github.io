@@ -1,5 +1,6 @@
 # Mashup : Photos, News and Information from arround the world.
 Live at http://obay-mardini.github.io/
+
 This app is a mashup of Google Static Map, Guardian News, Open Weather Map, a Github repo and Flickr Apis.
 It is interesting for people who like to know more Infromation, latest news and photos form one or more country from arround the world.
 
