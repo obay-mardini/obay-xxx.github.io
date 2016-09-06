@@ -1,7 +1,7 @@
 # Mashup : Photos, News and Information from arround the world.
 Live at http://obay-mardini.github.io/
 
-Technologies:
+#Technologies:
   * Vanilla javaScript.
   * CSS
   * HTML
